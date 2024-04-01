@@ -4,7 +4,7 @@
             <div class="login-window">
                 <div class="window-itemA"></div>
                 <div class="window-itemB"></div>
-                <div class="window-itemC">
+                <div class="window-itemC" ref="itemC">
                     <el-text class="title" size="large">登录</el-text>
                     <div class="input-box">
                         <el-form
@@ -58,10 +58,89 @@
                     </div>
                     <div class="Tips-box">
                         <el-text class="mx-1" size="small">还没有账号吗? 点我立即前往</el-text>
-                        <a class="signup">注册</a>
+                        <a class="signup" @click="switchFunc">注册</a>
                     </div>
 
                 </div>
+
+                <div class="window-itemD" ref="itemD">
+                    <el-text class="title" size="large">注册</el-text>
+                    <div class="input-box">
+                        <el-form
+                            :model="formData"
+                            label-position="top"
+                            @submit.prevent=""
+                        >
+                            <el-form-item label="账号">
+                                <el-input
+                                    v-model="formData.username"
+                                    size="large"
+                                    placeholder="请输入账号"
+                                >
+                                    <template #prefix>
+                                        <el-icon><User /></el-icon>
+                                    </template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="密码">
+                                <el-input
+                                    v-model="formData.password"
+                                    size="large"
+                                    type="password"
+                                    placeholder="请输入密码"
+                                >
+                                    <template #prefix>
+                                        <el-icon><Lock /></el-icon>
+                                    </template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="确认密码">
+                                <el-input
+                                    v-model="formData.confirmPassword"
+                                    size="large"
+                                    type="password"
+                                    placeholder="请输入密码"
+                                >
+                                    <template #prefix>
+                                        <el-icon><Lock /></el-icon>
+                                    </template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="邮箱验证码">
+                                <el-col style="display: flex; align-items: center; justify-content: flex-start">
+                                    <el-input
+                                        v-model="formData.emailCode"
+                                        size="large"
+                                        placeholder="请输入验证码"
+                                    >
+                                        <template #prefix>
+                                            <el-icon><PictureFilled /></el-icon>
+                                        </template>
+                                    </el-input>
+                                    <el-button
+                                        type="primary"
+                                        style="margin: 0 10px; width: 150px;"
+                                        size="large"
+                                        color="#626aef"
+                                        :disabled="isDisposed"
+                                        @click="sendCaptcha"
+                                    >{{ isDisposed ? `${time}s` : '获取验证码' }}</el-button>
+                                </el-col>
+
+                            </el-form-item>
+                            <div class="button-box">
+                                <button @click="onSubmit">注册</button>
+                                <button>重置</button>
+                            </div>
+                        </el-form>
+                    </div>
+                    <div class="Tips-box">
+                        <el-text class="mx-1" size="small">已经有账号了, 点击前往</el-text>
+                        <a class="signup" @click="switchFunc">登录</a>
+                    </div>
+
+                </div>
+
             </div>
         </div>
         <div class="right-box">
@@ -81,11 +160,54 @@
         graphicsCode: '',
         graphicsCodeId: ''
     })
+    const regFormData = ref({
+        email: '',
+        userName: '',
+        password: '',
+        confirmPassword: '',
+        id: '',
+        emailCode: ''
+    })
     const captchaImg = ref()
+    const isLogin = ref(true)
+    const itemC = ref()
+    const itemD = ref()
 
+    const isDisposed = ref(false)
+    const time = ref(60)
     const onSubmit = async () =>{
         if(await login(formData.value)){
             console.log('登录成功')
+        }
+    }
+
+    const sendCaptcha = () =>{
+        handleTimeChange()
+    }
+
+    const handleTimeChange = () => {
+        if (time.value <= 0) {
+            isDisposed.value = false
+            time.value = 60
+        } else {
+            isDisposed.value = true
+            setTimeout(() => {
+                time.value--
+                console.log(time.value)
+                handleTimeChange()
+            }, 1000)
+        }
+    }
+
+    const switchFunc = () =>{
+        if(isLogin.value){
+            isLogin.value = !isLogin.value
+            itemC.value.classList.add('login-out')
+            itemD.value.classList.add('reg-join')
+        }else {
+            isLogin.value = !isLogin.value
+            itemC.value.classList.remove('login-out')
+            itemD.value.classList.remove('reg-join')
         }
     }
 
@@ -122,6 +244,7 @@
         width: 600px;
         height: 800px;
         position: relative;
+        overflow: hidden;
     }
     .login-window .window-itemA{
         position: absolute;
@@ -153,6 +276,34 @@
         flex-direction: column;
         align-items: center;
         justify-content: space-around;
+        transition: .4s all;
+    }
+    .login-window .reg-join{
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+    .login-window .login-out{
+        left: 100%;
+        transform: translateY(-50%);
+    }
+    .login-window .window-itemD{
+        position: absolute;
+        top: 50%;
+        left: -100%;
+        transform: translateY(-50%);
+        width: 500px;
+        height: 600px;
+        background: white;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        transition: .4s all;
+    }
+    .window-itemD .title{
+        font-size: 24px;
+        font-weight: 900;
     }
     .window-itemC .title{
         font-size: 24px;
