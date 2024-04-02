@@ -4,7 +4,6 @@ export const login = (params) =>{
     return new Promise((resolve, reject) =>{
         service.post('/api/login', params)
             .then(res =>{
-                console.log(res.data.data)
                 resolve(true)
             })
             .catch(error =>{
@@ -24,4 +23,19 @@ export const getCaptchaImg = () =>{
 
             })
     })
+}
+
+export const getEmailCode = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/mail', {
+            email: params
+        })
+            .then(res =>{
+                resolve(res.data.data.emailID)
+            })
+            .catch(error =>{
+                reject(false)
+            })
+    })
+
 }
