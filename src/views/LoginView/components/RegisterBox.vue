@@ -80,7 +80,8 @@
 
 <script setup>
     import { inject, ref } from "vue";
-    import { getEmailCode } from "@/api/LoginView/index.js";
+    import { getEmailCode, register } from "@/api/LoginView/index.js";
+    import { ElMessage } from 'element-plus'
 
     const switchFunc = inject("switchFunc")
 
@@ -96,10 +97,15 @@
     const time = ref(60)
 
     const sendCaptcha = async () =>{
-        console.log(regFormData.value.email)
         regFormData.value.emailId = await getEmailCode(regFormData.value.email)
         if(regFormData.value.emailId){
             handleTimeChange()
+        }
+    }
+
+    const onSubmit = async () =>{
+        if(await register(regFormData.value)){
+            switchFunc()
         }
     }
 

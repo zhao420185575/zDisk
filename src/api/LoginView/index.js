@@ -1,10 +1,40 @@
-import service from '@/api/request.js'
+import { service, responseMessage } from '@/api/request.js'
+import { ElMessage } from 'element-plus'
 
 export const login = (params) =>{
     return new Promise((resolve, reject) =>{
         service.post('/api/login', params)
             .then(res =>{
-                resolve(true)
+                if(res.data.code === 200){
+                    responseMessage(1, res.data.msg)
+                    resolve(true)
+                }
+                else if(res.data.code === 404){
+                    responseMessage(0, res.data.msg)
+                    resolve(true)
+                }
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}
+
+export const register = (params) =>{
+    console.log(params)
+    return new Promise((resolve, reject) =>{
+        service.post('/api/register', params)
+            .then(res =>{
+                if(res.data.code === 200){
+                    responseMessage(1, res.data.msg)
+                    resolve(res)
+                }
+                else if(res.data.code === 404){
+                    responseMessage(0, res.data.msg)
+                    resolve(res)
+                }
+
             })
             .catch(error =>{
                 console.log(error)
