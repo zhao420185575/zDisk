@@ -65,6 +65,8 @@
 <script setup>
     import { onMounted, ref, inject } from "vue";
     import { login, getCaptchaImg } from "@/api/LoginView/index.js";
+    import router from "@/router/index.js";
+
 
     const switchFunc = inject("switchFunc")
 
@@ -77,7 +79,7 @@
     const captchaImg = ref()
     const onSubmit = async () =>{
         if(await login(formData.value)){
-            console.log('登录成功')
+            router.push({ path: '/' })
         }
     }
 

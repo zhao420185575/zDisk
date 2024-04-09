@@ -1,13 +1,42 @@
 import axios from 'axios'
 import router from "@/router/index.js";
+import {ElMessage} from "element-plus";
 
-const service = axios.create({
+export const service = axios.create({
     baseURL: 'http://10.205.103.88:8881',
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
     },
     timeout: 5000
 })
+
+export const responseMessage = (status, msg) =>{
+    switch (status){
+        case 0:
+            ElMessage({
+                message: msg,
+                type: 'error',
+            })
+            break
+        case 1:
+            ElMessage({
+                message: msg,
+                type: 'success',
+            })
+            break
+        case 2:
+            ElMessage({
+                message: msg,
+                type: 'warning',
+            })
+            break
+        default:
+            ElMessage({
+                message: msg,
+                type: 'info',
+            })
+    }
+}
 
 service.interceptors.request.use((config) =>{
     let formArr = ['/api/login']
@@ -17,9 +46,7 @@ service.interceptors.request.use((config) =>{
     token && (config.headers.Authorization = token)
 
     if(formArr.includes(config.url)){
-        config.headers = {
-            'Content-Type': 'application/json'
-        }
+
     }
     return config;
 })
@@ -47,4 +74,3 @@ service.interceptors.request.use((config) =>{
 //     return Promise.reject(error)
 // })
 
-export default service

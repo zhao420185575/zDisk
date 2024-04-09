@@ -49,20 +49,6 @@ import { ref, onMounted, provide } from "vue";
 
 
 
-
-
-
-
-
-
-
-
-
-
-    // onMounted(() =>{
-    //     getCaptcha()
-    // })
-
 </script>
 
 <style scoped>
