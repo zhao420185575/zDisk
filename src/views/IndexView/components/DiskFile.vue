@@ -1,6 +1,6 @@
 <template>
     <div class="file-container" @dblclick="openFile(fileData.isFolder, fileData.fileName)">
-        <img :src="fileData.fileCover" class="file-icon" >
+        <img :src="fileData.fileCover" class="file-icon" :title="fileData.fileName">
         <span>{{ fileData.fileName }}</span>
     </div>
 </template>

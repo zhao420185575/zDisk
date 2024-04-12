@@ -3,11 +3,8 @@ import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
 
 export const service = axios.create({
-    baseURL: 'http://10.205.103.88:8881',
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    timeout: 5000
+    baseURL: 'http://10.205.103.88:8881'
+
 })
 
 export const responseMessage = (status, msg) =>{
@@ -39,15 +36,18 @@ export const responseMessage = (status, msg) =>{
 }
 
 service.interceptors.request.use((config) =>{
-    let formArr = ['/api/login']
+    let formArr = ['/api/file/uploadfile']
 
     let token = localStorage.getItem('token')
 
     token && (config.headers.token = token)
 
-    if(formArr.includes(config.url)){
-
-    }
+    // if(formArr.includes(config.url)){
+    //     config.headers = {
+    //         token: token,
+    //         'Content-Type': 'multipart/form-data',
+    //     }
+    // }
     return config;
 })
 
