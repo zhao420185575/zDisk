@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import {inject, onMounted, ref, watch} from "vue";
+    import { inject, onMounted, ref, watch } from "vue";
     import router from "@/router/index.js";
     const activeIndex = ref("")
 

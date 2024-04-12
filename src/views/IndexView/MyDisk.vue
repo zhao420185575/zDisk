@@ -8,7 +8,7 @@
                     class="input-with-select"
                 >
                     <template #prepend>
-                        <el-button>
+                        <el-button @click="goBack">
                             <el-icon><Back /></el-icon>
                         </el-button>
                     </template>
@@ -16,16 +16,37 @@
             </div>
         </div>
 
-        <DiskDesktop />
+        <DiskDesktop ref="desktop" />
 
     </div>
 </template>
 
 <script setup>
-    import { ref } from "vue";
+import {nextTick, provide, ref, watch} from "vue";
     import DiskDesktop from "@/views/IndexView/components/DiskDesktop.vue";
 
-    const url = ref("/home")
+    const url = ref("/")
+    const oldUrl = ref("/")
+
+    const desktop = ref(null)
+
+    const changeUrl = (newUrl) =>{
+        oldUrl.value = url.value
+        url.value = url.value + newUrl + '/'
+    }
+
+    const goBack = () =>{
+        url.value = oldUrl.value
+    }
+    
+    watch(() => url.value, (newUrl, oldUrl) =>{
+        nextTick(() =>{
+            desktop.value.getFileList(newUrl)
+        })
+
+    })
+
+    provide('changeUrl', changeUrl)
 
 </script>
 

@@ -1,5 +1,5 @@
 import { service, responseMessage } from '@/api/request.js'
-import { ElMessage } from 'element-plus'
+
 
 export const login = (params) =>{
     return new Promise((resolve, reject) =>{
@@ -7,6 +7,7 @@ export const login = (params) =>{
             .then(res =>{
                 if(res.data.code === 200){
                     responseMessage(1, res.data.msg)
+                    localStorage.setItem('token', res.data.data.token)
                     resolve(true)
                 }
                 else if(res.data.code === 404){

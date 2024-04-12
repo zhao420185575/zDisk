@@ -41,9 +41,9 @@ export const responseMessage = (status, msg) =>{
 service.interceptors.request.use((config) =>{
     let formArr = ['/api/login']
 
-    let token = `Bearer ${localStorage.getItem('token')}`
+    let token = localStorage.getItem('token')
 
-    token && (config.headers.Authorization = token)
+    token && (config.headers.token = token)
 
     if(formArr.includes(config.url)){
 

@@ -79,6 +79,7 @@
     const captchaImg = ref()
     const onSubmit = async () =>{
         if(await login(formData.value)){
+
             router.push({ path: '/' })
         }
     }
