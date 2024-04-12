@@ -14,7 +14,15 @@
                     </template>
                 </el-input>
             </div>
+            <div class="function-bar">
+              <el-button type="primary" @click="openUploadBox">
+                  <el-icon><Position /></el-icon>
+                  <span>上传文件</span>
+              </el-button>
+            </div>
         </div>
+
+        <UploadBox ref="uploadBox" />
 
         <DiskDesktop ref="desktop" />
 
@@ -22,13 +30,20 @@
 </template>
 
 <script setup>
-import {nextTick, provide, ref, watch} from "vue";
+    import {nextTick, provide, ref, watch} from "vue";
     import DiskDesktop from "@/views/IndexView/components/DiskDesktop.vue";
+    import UploadBox from "@/views/IndexView/components/UploadBox.vue";
 
     const url = ref("/")
     const oldUrl = ref("/")
 
     const desktop = ref(null)
+
+    const uploadBox = ref(null)
+
+    const openUploadBox = () =>{
+        uploadBox.value.switchState()
+    }
 
     const changeUrl = (newUrl) =>{
         oldUrl.value = url.value
@@ -38,7 +53,11 @@ import {nextTick, provide, ref, watch} from "vue";
     const goBack = () =>{
         url.value = oldUrl.value
     }
-    
+
+    const getCurrentUrl = () =>{
+        return url.value
+    }
+
     watch(() => url.value, (newUrl, oldUrl) =>{
         nextTick(() =>{
             desktop.value.getFileList(newUrl)
@@ -47,7 +66,7 @@ import {nextTick, provide, ref, watch} from "vue";
     })
 
     provide('changeUrl', changeUrl)
-
+    provide('getCurrentUrl', getCurrentUrl)
 </script>
 
 <style scoped>
@@ -62,5 +81,12 @@ import {nextTick, provide, ref, watch} from "vue";
     .main-box .url-box{
         user-select: none;
         margin: 0 0 8px 0;
+        width: 400px;
     }
+    .main-box .function-box{
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+    }
+
 </style>

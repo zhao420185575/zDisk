@@ -14,3 +14,29 @@ export const getFileArr = (params) =>{
             })
     })
 }
+
+export const uploadFile = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post(`/api/file/uploadfile`, params)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}
+
+export const verifySharding = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/verifySharding', params)
+            .then(res => {
+
+            })
+            .catch(error =>{
+            console.log(error)
+            reject(false)
+        })
+    })
+}
