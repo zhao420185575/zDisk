@@ -40,3 +40,33 @@ export const verifySharding = (params) =>{
         })
     })
 }
+
+export const downloadFile = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/file/FileDownload', { fileArr: params })
+            .then(res => {
+                resolve(res.data)
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}
+
+export const mergeFile = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/file/judgmentmerge', params, {
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res => {
+                resolve(true)
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}

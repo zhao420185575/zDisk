@@ -3,7 +3,11 @@ import { service, responseMessage } from '@/api/request.js'
 
 export const login = (params) =>{
     return new Promise((resolve, reject) =>{
-        service.post('/api/login', params)
+        service.post('/api/login', params, {
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
             .then(res =>{
                 if(res.data.code === 200){
                     responseMessage(1, res.data.msg)

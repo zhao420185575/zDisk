@@ -1,12 +1,30 @@
 <template>
-    <div class="file-container" @dblclick="openFile(fileData.isFolder, fileData.fileName)">
+    <div class="file-container"
+         @dblclick="openFile(fileData.isFolder, fileData.fileName)"
+         :class="{'file-container-select': checkboxState}"
+         @click="checkboxState = !checkboxState"
+    >
         <img :src="fileData.fileCover" class="file-icon" :title="fileData.fileName">
         <span>{{ fileData.fileName }}</span>
+        <el-checkbox v-model="checkboxState" v-if="fileData.isFolder" class="check" />
     </div>
 </template>
 
 <script setup>
-    import {defineProps, inject, onMounted} from 'vue'
+    import {defineProps, inject, onMounted, ref, watch} from 'vue'
+
+    const checkboxState = ref(false)
+
+    const addFile = inject('addFile')
+    const removeFile = inject('removeFile')
+
+    watch(() => checkboxState.value, () =>{
+        if(checkboxState.value){
+          addFile(props.fileData.fileMd5)
+        }else {
+          removeFile(props.fileData.fileMd5)
+        }
+    })
 
     const changeUrl = inject("changeUrl")
     const props = defineProps({
@@ -59,6 +77,18 @@
         cursor: pointer;
         color: #606266;
         user-select: none;
+        position: relative;
+    }
+    .file-container-select{
+        background: rgb(255, 255, 255, 0.6);
+    }
+    .file-container .check{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 14px;
+        height: 14px;
+        margin: 4px;
     }
     .file-container:hover{
         background: rgb(255, 255, 255, 0.6);

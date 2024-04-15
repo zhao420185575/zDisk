@@ -16,8 +16,23 @@
             </div>
             <div class="function-bar">
               <el-button type="primary" @click="openUploadBox">
-                  <el-icon><Position /></el-icon>
+                <el-icon><UploadFilled /></el-icon>
                   <span>上传文件</span>
+              </el-button>
+
+              <el-button type="success" @click="download">
+                <el-icon><Download /></el-icon>
+                <span>下载/批量下载</span>
+              </el-button>
+
+              <el-button @click="openUploadBox">
+                <el-icon><FolderAdd /></el-icon>
+                <span>新建文件夹</span>
+              </el-button>
+
+              <el-button @click="openUploadBox">
+                <el-icon><DocumentAdd /></el-icon>
+                <span>新建文件</span>
               </el-button>
             </div>
         </div>
@@ -34,6 +49,7 @@
     import DiskDesktop from "@/views/IndexView/components/DiskDesktop.vue";
     import UploadBox from "@/views/IndexView/components/UploadBox.vue";
 
+
     const url = ref("/")
     const oldUrl = ref("/")
 
@@ -47,7 +63,7 @@
 
     const changeUrl = (newUrl) =>{
         oldUrl.value = url.value
-        url.value = url.value + newUrl + '/'
+        url.value = url.value.length > 1 ? '/' + url.value + newUrl : url.value + newUrl
     }
 
     const goBack = () =>{
@@ -56,6 +72,10 @@
 
     const getCurrentUrl = () =>{
         return url.value
+    }
+
+    const download = () =>{
+        desktop.value.download()
     }
 
     watch(() => url.value, (newUrl, oldUrl) =>{
@@ -87,6 +107,11 @@
       display: flex;
       flex-direction: row;
       width: 100%;
+      align-items: center;
     }
-
+    .function-box .function-bar{
+      margin-left: 30px;
+      display: flex;
+      align-items: center;
+    }
 </style>

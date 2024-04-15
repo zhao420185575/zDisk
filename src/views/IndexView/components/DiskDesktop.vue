@@ -1,6 +1,8 @@
 <template>
     <div class="desktop-box">
-        <DiskFile :fileData="item"  v-for="item in fileData" />
+
+          <DiskFile :fileData="item"  v-for="item in fileData" />
+
         <div class="Tips" v-if="!fileData.length">
             <img src="/noContent.png" />
             <span>暂无文件</span>
@@ -9,26 +11,50 @@
 </template>
 
 <script setup>
-    import { onMounted, ref } from "vue";
-
-
+import {inject, onMounted, provide, ref} from "vue";
     import DiskFile from "@/views/IndexView/components/DiskFile.vue";
-    import { getFileArr } from "@/api/IndexView/index.js";
+    import {downloadFile, getFileArr} from "@/api/IndexView/index.js";
 
     const fileData = ref([])
+    const fileList = ref([])
 
+
+
+    const addFile = (fileMd5) =>{
+        fileList.value.push(fileMd5)
+        console.log(fileList.value)
+    }
+
+    const removeFile = (fileMd5) =>{
+        let index = fileList.value.indexOf(fileMd5)
+        if(index !== -1){
+            fileList.value.splice(index)
+        }
+    }
+
+    provide('addFile', addFile)
+    provide('removeFile', removeFile)
 
     const getFileList = async (url) =>{
         fileData.value = await getFileArr(url)
     }
 
+    const download = async () =>{
+      if(await downloadFile(fileList.value)){
+            console.log(1)
+      }
+    }
+
     defineExpose(({
-        getFileList
+        getFileList,
+        download
     }))
 
     onMounted(  async () =>{
         fileData.value = await getFileArr("/")
     })
+
+
 
 </script>
 
@@ -40,11 +66,15 @@
         border-radius: 4px;
         display: grid;
         grid-auto-flow: column;
-        grid-auto-columns: 120px;
+        grid-template-columns: repeat(auto-fill, 120px);
         grid-gap: 6px;
         padding: 10px;
         box-sizing: border-box;
         position: relative;
+        overflow-y: scroll;
+    }
+    .desktop-box::-webkit-scrollbar{
+        display: none;
     }
     .desktop-box .Tips{
         position: absolute;

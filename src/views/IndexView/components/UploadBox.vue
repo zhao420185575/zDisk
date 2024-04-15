@@ -1,10 +1,11 @@
 <script setup>
     import {inject, ref} from "vue";
-    import { uploadFile, verifySharding } from '@/api/IndexView/index.js'
+    import { uploadFile, verifySharding, mergeFile } from '@/api/IndexView/index.js'
     import SparkMD5 from 'spark-md5'
-    const uploadBox = ref(true)
+    const uploadBox = ref(false)
     const fileList = ref([])
     const getCurrentUrl = inject('getCurrentUrl')
+    const changeUrl = inject('changeUrl')
 
     const onUpload = async (File) => {
       const chunkSize = 30 * 1024 * 1024; // 分片大小
@@ -47,9 +48,12 @@
       // 合并
       const mergeData = { // 合并参数
         fileName: File.name,
-        fileSign: fileMd5
+        chunkMD5: fileMd5,
+        path: getCurrentUrl(),
+        chunks: chunkCount.toString()
       }
-      mergeFile(mergeData)// 合并接口-自己定义
+
+      uploadMergeFile(mergeData)// 合并接口-自己定义
     }
 
     const checkChunkFile = (formdata) => {
@@ -61,8 +65,12 @@
       uploadFile(formdata)
     }
 
-    const mergeFile = (mergeData) => {
-
+    const uploadMergeFile = async (mergeData) => {
+        if(await mergeFile(mergeData)){
+            console.log('合并成功')
+            changeUrl('')
+            switchState()
+        }
     }
 
     const getFileMd5 = (file, chunkCount, chunkSize) => {
