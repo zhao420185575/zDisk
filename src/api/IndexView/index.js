@@ -70,3 +70,20 @@ export const mergeFile = (params) =>{
             })
     })
 }
+
+export const createFolder = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/file/createnewfolder', params, {
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res => {
+                resolve(true)
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}

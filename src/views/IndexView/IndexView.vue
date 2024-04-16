@@ -31,6 +31,7 @@
         height: 100vh;
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
     }
     .index-box .content-box{
         width: 100%;

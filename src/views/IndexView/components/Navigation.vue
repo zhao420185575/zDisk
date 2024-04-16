@@ -1,7 +1,7 @@
 <template>
     <el-menu
         :default-active="activeIndex"
-        class="el-menu-vertical-demo"
+        class="el-menu-vertical-demo nav"
         :collapse="true"
         :router="true"
     >

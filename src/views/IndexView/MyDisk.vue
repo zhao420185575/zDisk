@@ -25,15 +25,11 @@
                 <span>下载/批量下载</span>
               </el-button>
 
-              <el-button @click="openUploadBox">
+              <el-button @click="createFolder">
                 <el-icon><FolderAdd /></el-icon>
                 <span>新建文件夹</span>
               </el-button>
 
-              <el-button @click="openUploadBox">
-                <el-icon><DocumentAdd /></el-icon>
-                <span>新建文件</span>
-              </el-button>
             </div>
         </div>
 
@@ -56,6 +52,10 @@
     const desktop = ref(null)
 
     const uploadBox = ref(null)
+
+    const createFolder = () =>{
+        desktop.value.addCreate()
+    }
 
     const openUploadBox = () =>{
         uploadBox.value.switchState()

@@ -5,18 +5,29 @@
          @click="checkboxState = !checkboxState"
     >
         <img :src="fileData.fileCover" class="file-icon" :title="fileData.fileName">
-        <span>{{ fileData.fileName }}</span>
+        <span v-if="!fileData.isEdit">{{ fileData.fileName }}</span>
+        <el-input
+            v-else
+            v-model="fileData.fileName"
+            placeholder="请输入文件名"
+            style="height: 24px;margin: 2px"
+            ref="fileEdit"
+            @blur="saveFile"
+        />
         <el-checkbox v-model="checkboxState" v-if="fileData.isFolder" class="check" />
     </div>
 </template>
 
 <script setup>
-    import {defineProps, inject, onMounted, ref, watch} from 'vue'
+    import {defineProps, inject, nextTick, onMounted, ref, watch} from 'vue'
+    import {createFolder} from "@/api/IndexView/index.js";
 
     const checkboxState = ref(false)
 
     const addFile = inject('addFile')
     const removeFile = inject('removeFile')
+    const getCurrentUrl = inject('getCurrentUrl')
+    const fileEdit = ref(null)
 
     watch(() => checkboxState.value, () =>{
         if(checkboxState.value){
@@ -25,6 +36,18 @@
           removeFile(props.fileData.fileMd5)
         }
     })
+
+    const saveFile = async () =>{
+        if(await createFolder({ ParentPath: getCurrentUrl(), CreateNewFolderName: props.fileData.fileName }))
+        props.fileData.isEdit = false
+
+    }
+
+    const getFocus = () =>{
+         nextTick(() =>{
+            fileEdit.value.focus()
+         })
+    }
 
     const changeUrl = inject("changeUrl")
     const props = defineProps({
@@ -55,6 +78,10 @@
        }
     })
 
+    defineExpose(({
+        getFocus
+    }))
+
     const openFile = (isFolder, fileName) =>{
         if(isFolder){
 
@@ -78,6 +105,7 @@
         color: #606266;
         user-select: none;
         position: relative;
+        margin: 6px;
     }
     .file-container-select{
         background: rgb(255, 255, 255, 0.6);
@@ -103,5 +131,9 @@
         max-width: 80%;
         text-overflow: ellipsis;
         overflow: hidden;
+    }
+    .edit-box{
+        width: 100%;
+
     }
 </style>
