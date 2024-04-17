@@ -1,12 +1,13 @@
 <template>
     <div class="desktop-box" @click.right.native="showContextMenu($event)">
 
-          <DiskFile :fileData="item"  v-for="(item, index) in fileData" ref="fileRef" :key="index" />
+          <DiskFile :fileData="item"  v-for="(item, index) in fileData" ref="fileRef" :key="index" @close="closeCreate" />
 
         <div class="Tips" v-if="!fileData.length">
             <img src="/noContent.png" />
             <span>暂无文件</span>
         </div>
+
         <Menu ref="menu" />
     </div>
 </template>
@@ -16,6 +17,7 @@
     import DiskFile from "@/views/IndexView/components/DiskFile.vue";
     import {downloadFile, getFileArr} from "@/api/IndexView/index.js";
     import Menu from "@/views/IndexView/components/ContextMenu/Menu.vue";
+  import FrameBox from "@/views/IndexView/components/FrameBox.vue";
 
     const fileData = ref([])
     const fileList = ref([])
@@ -42,6 +44,10 @@
         })
     }
 
+    const closeCreate = () =>{
+        fileData.value.pop()
+    }
+
     const showContextMenu = (e) =>{
         e.preventDefault()
         clientX.value = e.clientX
@@ -55,7 +61,7 @@
 
     const addFile = (fileMd5) =>{
         fileList.value.push(fileMd5)
-        console.log(fileList.value)
+
     }
 
     const removeFile = (fileMd5) =>{
@@ -65,16 +71,20 @@
         }
     }
 
-    provide('addFile', addFile)
-    provide('removeFile', removeFile)
-
     const getFileList = async (url) =>{
         fileData.value = await getFileArr(url)
     }
 
+    provide('addFile', addFile)
+    provide('removeFile', removeFile)
+    provide('addCreate', addCreate)
+    provide('getFileList', getFileList)
+
+
+
     const download = async () =>{
       if(await downloadFile(fileList.value)){
-            console.log(1)
+
       }
     }
 
@@ -105,7 +115,7 @@
         align-content: flex-start;
         padding: 10px;
         box-sizing: border-box;
-        position: relative;
+
         overflow-y: scroll;
 
     }

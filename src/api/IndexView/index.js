@@ -43,9 +43,15 @@ export const verifySharding = (params) =>{
 
 export const downloadFile = (params) =>{
     return new Promise((resolve, reject) =>{
-        service.post('/api/file/FileDownload', { fileArr: params })
+        service.post('/api/file/FileDownload', { fileArr: params },{
+            responseType: 'blob'
+        })
             .then(res => {
+                console.log(res.headers['Content-Disposition'])
                 resolve(res.data)
+                // let link = document.createElement('a')
+                // link.href = window.URL.createObjectURL(new Blob([res.data]))
+
             })
             .catch(error =>{
                 console.log(error)

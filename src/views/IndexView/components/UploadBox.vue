@@ -1,11 +1,16 @@
 <script setup>
-    import {inject, ref} from "vue";
+    import {inject, nextTick, ref} from "vue";
     import { uploadFile, verifySharding, mergeFile } from '@/api/IndexView/index.js'
     import SparkMD5 from 'spark-md5'
+    import {responseMessage} from "@/api/request.js";
+
+    const props = defineProps(['diskDeskRef'])
+
     const uploadBox = ref(false)
     const fileList = ref([])
     const getCurrentUrl = inject('getCurrentUrl')
-    const changeUrl = inject('changeUrl')
+
+
 
     const onUpload = async (File) => {
       const chunkSize = 30 * 1024 * 1024; // 分片大小
@@ -40,7 +45,6 @@
         const data = await verifySharding(params) // 检验接口-自己定义
 
         if(!data.flag){
-          console.log("开始上传第" + i + "个分片")
           await uploadChunkFile(formdata) // 上传接口-自己定义
         }
       }
@@ -65,11 +69,14 @@
       uploadFile(formdata)
     }
 
+
     const uploadMergeFile = async (mergeData) => {
         if(await mergeFile(mergeData)){
-            console.log('合并成功')
-            changeUrl('')
             switchState()
+            nextTick(() =>{
+              props.diskDeskRef.getFileList(getCurrentUrl())
+            })
+            responseMessage(1, '上传成功')
         }
     }
 

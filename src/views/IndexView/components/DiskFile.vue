@@ -13,14 +13,16 @@
             style="height: 24px;margin: 2px"
             ref="fileEdit"
             @blur="saveFile"
+            @keydown="exitEdit"
         />
         <el-checkbox v-model="checkboxState" v-if="fileData.isFolder" class="check" />
     </div>
 </template>
 
 <script setup>
-    import {defineProps, inject, nextTick, onMounted, ref, watch} from 'vue'
-    import {createFolder} from "@/api/IndexView/index.js";
+    import { defineProps, inject, nextTick, onMounted, ref, watch, defineEmits} from 'vue'
+    import { createFolder } from "@/api/IndexView/index.js";
+    import {responseMessage} from "@/api/request.js";
 
     const checkboxState = ref(false)
 
@@ -28,6 +30,7 @@
     const removeFile = inject('removeFile')
     const getCurrentUrl = inject('getCurrentUrl')
     const fileEdit = ref(null)
+    const emits = defineEmits(['close'])
 
     watch(() => checkboxState.value, () =>{
         if(checkboxState.value){
@@ -37,7 +40,18 @@
         }
     })
 
+    const exitEdit = (e) =>{
+        if(e.keyCode === 27){
+            emits('close')
+        }
+    }
+
     const saveFile = async () =>{
+        if(props.fileData.fileName === '') {
+            getFocus()
+            responseMessage(2, '文件夹名称不能为空,取消创建请按ESC键')
+            return
+        }
         if(await createFolder({ ParentPath: getCurrentUrl(), CreateNewFolderName: props.fileData.fileName }))
         props.fileData.isEdit = false
 
@@ -89,6 +103,8 @@
             changeUrl(fileName)
         }
     }
+
+
 
 </script>
 

@@ -1,8 +1,15 @@
 <script setup>
-    import { computed, onMounted, ref, nextTick, defineExpose } from "vue";
+import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
 
     const state = ref(false)
     const contextMenu = ref(null);
+    const addCreate = inject('addCreate')
+
+    const createFolder = () =>{
+        addCreate()
+        onClose()
+    }
+
     onMounted(async () => {
     // 确保组件已经渲染
       await nextTick();
@@ -49,7 +56,7 @@
         v-show="state"
     >
         <ul>
-          <li>
+          <li @click="createFolder">
             <el-icon><FolderAdd /></el-icon>
             <span>新建文件夹</span>
           </li>

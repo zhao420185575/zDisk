@@ -1,5 +1,6 @@
 <template>
     <div class="main-box">
+
         <div class="function-box">
             <div class="url-box">
                 <el-input
@@ -33,7 +34,7 @@
             </div>
         </div>
 
-        <UploadBox ref="uploadBox" />
+        <UploadBox ref="uploadBox" :diskDeskRef="desktop" />
 
         <DiskDesktop ref="desktop" />
 
@@ -41,15 +42,21 @@
 </template>
 
 <script setup>
-    import {nextTick, provide, ref, watch} from "vue";
+    import {inject, nextTick, provide, ref, watch} from "vue";
     import DiskDesktop from "@/views/IndexView/components/DiskDesktop.vue";
     import UploadBox from "@/views/IndexView/components/UploadBox.vue";
+    import FrameBox from "@/views/IndexView/components/FrameBox.vue";
+
 
 
     const url = ref("/")
     const oldUrl = ref("/")
 
     const desktop = ref(null)
+
+    const getFileList = ref(null)
+
+
 
     const uploadBox = ref(null)
 
