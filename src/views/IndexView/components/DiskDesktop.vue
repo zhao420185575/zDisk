@@ -1,7 +1,7 @@
 <template>
     <div class="desktop-box" @click.right.native="showContextMenu($event)">
 
-          <DiskFile :fileData="item"  v-for="(item, index) in fileData" ref="fileRef" :key="index" @close="closeCreate" />
+          <DiskFile :fileData="item" :index="index" v-for="(item, index) in fileData" ref="fileRef" :key="index" @close="closeCreate" />
 
         <div class="Tips" v-if="!fileData.length">
             <img src="/noContent.png" />
@@ -30,6 +30,8 @@
     const clientX = ref()
     const clientY = ref()
 
+    const selectIndex = ref(null)
+
     const getCurrentUrl = inject('getCurrentUrl')
 
     const cleanSelect = () =>{
@@ -37,17 +39,17 @@
       fileList.value = []
     }
 
-    const sendMd5 = (fileMD5) =>{
-        menu.value.getMd5(fileMD5)
+    const sendMd5 = (fileData) =>{
+        menu.value.getMd5(fileData)
     }
 
     const addCreate =  () =>{
         fileData.value.push({
-            fileCover: "http://10.205.103.88:8881/api/icon/folder.png",
+            fileCover: "http://10.205.103.88:8881/icon/folder.png",
             fileCreateTime: "",
             fileMd5: '',
             fileName: "",
-            isFolder: 0,
+            isFolder: 1,
             isEdit: true
         })
 
@@ -89,22 +91,36 @@
         fileData.value = await getFileArr(url)
     }
 
+  const changeEdit = () =>{
+      fileRef.value[selectIndex.value].rename()
+  }
+
+  const getCurrentIndex = (index) =>{
+    selectIndex.value = index
+  }
     provide('addFile', addFile)
     provide('removeFile', removeFile)
     provide('addCreate', addCreate)
     provide('getFileList', getFileList)
     provide('cleanSelect', cleanSelect)
     provide('sendMd5', sendMd5)
-
+    provide('changeEdit', changeEdit)
+    provide('getCurrentIndex', getCurrentIndex)
 
 
 
     const download = async () =>{
+      if(fileList.value.length === 0) {
+        responseMessage(2, '请勾选需要下载的文件')
+        return
+      }
       if(await downloadFile(fileList.value)){
           cleanSelect()
           responseMessage(1, '下载成功')
       }
     }
+
+
 
     defineExpose(({
         getFileList,

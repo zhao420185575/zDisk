@@ -1,5 +1,7 @@
 <script setup>
 import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
+import {deleteFile} from "@/api/IndexView/index.js";
+import {responseMessage} from "@/api/request.js";
 
     const state = ref(false)
     const contextMenu = ref(null);
@@ -7,24 +9,22 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
     const changeUrl = inject('changeUrl')
     const getCurrentUrl = inject('getCurrentUrl')
     const download = inject('download')
+    const changeEdit = inject('changeEdit')
 
-    const downloadMD5 = ref(null)
+
+const removeData = ref(null)
+    const reNameData = ref(null)
 
     const createFolder = () =>{
         addCreate()
         onClose()
     }
 
-    onMounted(async () => {
-    // 确保组件已经渲染
-      await nextTick();
-    // 触发组件focus
-    //   contextMenu.value.focus();
-    });
+
 
     const onClose = () =>{
         state.value = false
-        downloadMD5.value = null
+        removeData.value = null
     }
 
     const showMenu = (x ,y, currentDom) =>{
@@ -43,8 +43,8 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
 
     }
 
-    const getMd5 = (fileMD5) =>{
-        downloadMD5.value = fileMD5
+    const getMd5 = (fileData) =>{
+        removeData.value = reNameData.value =  fileData
     }
 
     onMounted(() =>{
@@ -58,6 +58,24 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
 
     const downloadFile = () =>{
         download()
+        onClose()
+    }
+
+    const removeFile = async () =>{
+        if (!removeData.value) return
+        if(await deleteFile({
+          path: removeData.value.path,
+          fileMd5: removeData.value.fileMd5,
+          isFolder: removeData.value.isFolder
+        })){
+          responseMessage(1, '删除成功')
+          onClose()
+        }
+
+    }
+
+    const reFileName = () =>{
+        changeEdit()
         onClose()
     }
 
@@ -88,11 +106,11 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
             <el-icon><Download /></el-icon>
             <span>下载</span>
           </li>
-          <li v-show="downloadMD5">
+          <li v-show="removeData" @click="removeFile">
             <el-icon><Delete /></el-icon>
             <span>删除</span>
           </li>
-          <li>
+          <li v-show="reNameData" @click="reFileName">
             <el-icon><Edit /></el-icon>
             <span>重命名</span>
           </li>

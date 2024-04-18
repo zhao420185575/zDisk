@@ -128,3 +128,20 @@ export const getShareFile = (params) =>{
             })
     })
 }
+
+export const deleteFile = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/file/deletefile', params,{
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res => {
+                resolve(true)
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}

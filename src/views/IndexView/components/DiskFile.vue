@@ -3,7 +3,7 @@
          @dblclick="openFile(fileData.isFolder, fileData.fileMd5 ?? fileData.fileName, fileData.fileType)"
          :class="{'file-container-select': checkboxState}"
          @click.left="checkboxState = !checkboxState"
-         @click.right="getFileInfo(fileData.fileMd5)"
+         @click.right="getFileInfo(fileData)"
     >
         <img :src="fileData.fileCover" class="file-icon" :title="fileData.fileName">
         <span v-if="!fileData.isEdit">{{ fileData.fileName }}</span>
@@ -13,10 +13,10 @@
             placeholder="请输入文件名"
             style="height: 24px;margin: 2px"
             ref="fileEdit"
-            @blur="saveFile"
+            @blur="handleBlur"
             @keydown="exitEdit"
         />
-        <el-checkbox v-model="checkboxState" v-if="fileData.isFolder" class="check" @click="checkboxState = !checkboxState" />
+        <el-checkbox v-model="checkboxState" v-if="!fileData.isFolder" class="check" @click="checkboxState = !checkboxState" />
     </div>
 </template>
 
@@ -33,12 +33,39 @@
     const cleanSelect = inject('cleanSelect')
     const preview = inject('preview')
     const sendMd5 = inject('sendMd5')
+    const getCurrentIndex = inject('getCurrentIndex')
     const fileEdit = ref(null)
     const emits = defineEmits(['close'])
 
-    const getFileInfo = (fileMD5) =>{
-        if(!fileMD5) return
-        sendMd5(fileMD5)
+    const reNameState = ref(false)
+
+    const oldName = ref(null)
+
+    const isEscPressed = ref()
+
+    const handleBlur = () => {
+      if (!isEscPressed.value) {
+        saveFile();
+      }
+      isEscPressed.value = false; // 重置标志
+    };
+
+    const getFileInfo = (fileData) =>{
+        if(!fileData) return
+        const fileInfo = {
+            fileMd5: fileData.isFolder ? fileData.fileName : fileData.fileMd5,
+            isFolder: fileData.isFolder,
+            path: getCurrentUrl()
+        }
+        sendMd5(fileInfo)
+        getCurrentIndex(props.index)
+    }
+
+    const rename = () =>{
+        oldName.value = props.fileData.fileName
+        props.fileData.isEdit = true
+        reNameState.value = true
+        getFocus()
     }
 
     watch(() => checkboxState.value, () =>{
@@ -49,20 +76,39 @@
         }
     })
 
-    const exitEdit = (e) =>{
+    const exitEdit = async (e) =>{
         if(e.keyCode === 27){
-            emits('close')
+          isEscPressed.value = true;
+          if(reNameState.value){
+              closeEdit()
+            }else {
+              emits('close')
+            }
         }
     }
 
+    const closeEdit = () =>{
+      props.fileData.fileName = oldName.value
+      reNameState.value = false
+      props.fileData.isEdit = false
+    }
+
     const saveFile = async () =>{
-        if(props.fileData.fileName === '') {
+        if (reNameState.value){
+            if(props.fileData.fileName === oldName.value || props.fileData.fileName === ''){
+                getFocus()
+                responseMessage(2, `${props.fileData.isFolder ? '文件夹' : '文件'}名称为空或未修改,取消重命名请按ESC键`)
+                console.log('空')
+            }
+        }else {
+          if(props.fileData.fileName === '') {
             getFocus()
             responseMessage(2, '文件夹名称不能为空,取消创建请按ESC键')
             return
+          }
+          if(await createFolder({ ParentPath: getCurrentUrl(), CreateNewFolderName: props.fileData.fileName }))
+            props.fileData.isEdit = false
         }
-        if(await createFolder({ ParentPath: getCurrentUrl(), CreateNewFolderName: props.fileData.fileName }))
-        props.fileData.isEdit = false
 
     }
 
@@ -98,19 +144,22 @@
                type: Number,
                required: true
            }
-       }
+       },
+        index: Number
     })
 
     defineExpose(({
-        getFocus
+        getFocus,
+        rename
     }))
 
     const openFile = (isFolder, fileMD5, fileType) =>{
         if(isFolder){
-            preview(fileMD5, fileType)
+          changeUrl(fileMD5)
+          cleanSelect()
+
         }else {
-            changeUrl(fileMD5)
-            cleanSelect()
+          preview(fileMD5, fileType)
         }
     }
 
