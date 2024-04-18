@@ -17,7 +17,8 @@
     import DiskFile from "@/views/IndexView/components/DiskFile.vue";
     import {downloadFile, getFileArr} from "@/api/IndexView/index.js";
     import Menu from "@/views/IndexView/components/ContextMenu/Menu.vue";
-  import FrameBox from "@/views/IndexView/components/FrameBox.vue";
+  import {responseMessage} from "@/api/request.js";
+
 
     const fileData = ref([])
     const fileList = ref([])
@@ -28,6 +29,17 @@
 
     const clientX = ref()
     const clientY = ref()
+
+    const getCurrentUrl = inject('getCurrentUrl')
+
+    const cleanSelect = () =>{
+      getFileList(getCurrentUrl())
+      fileList.value = []
+    }
+
+    const sendMd5 = (fileMD5) =>{
+        menu.value.getMd5(fileMD5)
+    }
 
     const addCreate =  () =>{
         fileData.value.push({
@@ -43,6 +55,8 @@
           fileRef.value[fileData.value.length - 1].getFocus()
         })
     }
+
+
 
     const closeCreate = () =>{
         fileData.value.pop()
@@ -79,12 +93,16 @@
     provide('removeFile', removeFile)
     provide('addCreate', addCreate)
     provide('getFileList', getFileList)
+    provide('cleanSelect', cleanSelect)
+    provide('sendMd5', sendMd5)
+
 
 
 
     const download = async () =>{
       if(await downloadFile(fileList.value)){
-
+          cleanSelect()
+          responseMessage(1, '下载成功')
       }
     }
 

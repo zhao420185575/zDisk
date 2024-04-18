@@ -1,11 +1,14 @@
 <script setup>
 
 import FrameBox from "@/views/IndexView/components/FrameBox.vue";
+import {ref} from "vue";
+const frameRef = ref(null)
+
 </script>
 
 <template>
-<!--    <FrameBox />-->
-    <router-view />
+    <FrameBox ref="frameRef" />
+    <router-view :frameRef="frameRef" />
 
 </template>
 

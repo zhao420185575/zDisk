@@ -12,9 +12,15 @@
 
 <script setup>
     import Navigation from "@/views/IndexView/components/Navigation.vue";
-    import {provide, ref} from "vue";
+    import {nextTick, provide, ref} from "vue";
 
     const titleName = ref("")
+
+    const props = defineProps(['frameRef'])
+
+
+    provide('preview', (fileMD5, fileType) => props.frameRef.getUrl(fileMD5, fileType))
+
 
     const changeTitle = (name) =>{
         titleName.value = name

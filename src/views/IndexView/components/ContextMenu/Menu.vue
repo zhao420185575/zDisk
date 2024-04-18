@@ -4,6 +4,11 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
     const state = ref(false)
     const contextMenu = ref(null);
     const addCreate = inject('addCreate')
+    const changeUrl = inject('changeUrl')
+    const getCurrentUrl = inject('getCurrentUrl')
+    const download = inject('download')
+
+    const downloadMD5 = ref(null)
 
     const createFolder = () =>{
         addCreate()
@@ -19,6 +24,7 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
 
     const onClose = () =>{
         state.value = false
+        downloadMD5.value = null
     }
 
     const showMenu = (x ,y, currentDom) =>{
@@ -37,13 +43,27 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
 
     }
 
+    const getMd5 = (fileMD5) =>{
+        downloadMD5.value = fileMD5
+    }
 
     onMounted(() =>{
           window.addEventListener('click', handleClickOutside)
     })
 
+    const refresh = () =>{
+        changeUrl(getCurrentUrl())
+        onClose()
+    }
+
+    const downloadFile = () =>{
+        download()
+        onClose()
+    }
+
     defineExpose(({
-        showMenu
+        showMenu,
+        getMd5
     }))
 
 </script>
@@ -60,15 +80,15 @@ import {computed, onMounted, ref, nextTick, defineExpose, inject} from "vue";
             <el-icon><FolderAdd /></el-icon>
             <span>新建文件夹</span>
           </li>
-          <li>
+          <li @click="refresh">
             <el-icon><RefreshLeft /></el-icon>
             <span>刷新</span>
           </li>
-          <li>
+          <li @click="downloadFile">
             <el-icon><Download /></el-icon>
             <span>下载</span>
           </li>
-          <li>
+          <li v-show="downloadMD5">
             <el-icon><Delete /></el-icon>
             <span>删除</span>
           </li>

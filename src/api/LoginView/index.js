@@ -21,6 +21,7 @@ export const login = (params) =>{
             })
             .catch(error =>{
                 console.log(error)
+
                 reject(false)
             })
     })
@@ -29,7 +30,11 @@ export const login = (params) =>{
 export const register = (params) =>{
     console.log(params)
     return new Promise((resolve, reject) =>{
-        service.post('/api/register', params)
+        service.post('/api/register', params, {
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
             .then(res =>{
                 if(res.data.code === 200){
                     responseMessage(1, res.data.msg)
@@ -50,7 +55,11 @@ export const register = (params) =>{
 
 export const getCaptchaImg = () =>{
     return new Promise((resolve, reject) =>{
-        service.get('/api/captcha')
+        service.get('/api/captcha', {
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
             .then(res =>{
                 resolve(res.data.data)
             })
@@ -64,6 +73,10 @@ export const getEmailCode = (params) =>{
     return new Promise((resolve, reject) =>{
         service.post('/api/mail', {
             email: params
+        },{
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
         })
             .then(res =>{
                 resolve(res.data.data.emailID)

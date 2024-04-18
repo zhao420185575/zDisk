@@ -5,6 +5,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
       {
+          path: '/',
+          redirect: '/MyDisk'
+      },
+      {
           name: 'login',
           path: '/login',
           component: import('@/views/LoginView/LoginView.vue')
@@ -25,14 +29,19 @@ const router = createRouter({
                   component: import('@/views/IndexView/P-To-P.vue')
               },
               {
-                  name: 'center',
+                  name: 'Center',
                   path: '/Center',
                   component: import('@/views/IndexView/Center.vue')
               },
               {
-                  name: 'setting',
+                  name: 'Cetting',
                   path: '/Setting',
                   component: import('@/views/IndexView/Setting.vue')
+              },
+              {
+                  name: 'Share',
+                  path: '/Share/:secret?',
+                  component: import('@/views/IndexView/ShareView.vue')
               }
           ]
       }

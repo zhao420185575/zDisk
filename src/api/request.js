@@ -2,8 +2,10 @@ import axios from 'axios'
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
 
+export const baseURL = 'http://10.205.103.88:8881'
+
 export const service = axios.create({
-    baseURL: 'http://10.205.103.88:8881'
+    baseURL: baseURL
 
 })
 

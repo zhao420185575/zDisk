@@ -69,6 +69,7 @@
     }
 
     const changeUrl = (newUrl) =>{
+        if(newUrl === '/'){ url.value = newUrl; return }
         oldUrl.value = url.value
         url.value = url.value.length > 1 ? '/' + url.value + newUrl : url.value + newUrl
     }
@@ -82,6 +83,7 @@
     }
 
     const download = () =>{
+
         desktop.value.download()
     }
 
@@ -94,6 +96,7 @@
 
     provide('changeUrl', changeUrl)
     provide('getCurrentUrl', getCurrentUrl)
+    provide('download', download)
 </script>
 
 <style scoped>

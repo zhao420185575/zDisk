@@ -1,8 +1,9 @@
 <template>
     <div class="file-container"
-         @dblclick="openFile(fileData.isFolder, fileData.fileName)"
+         @dblclick="openFile(fileData.isFolder, fileData.fileMd5 ?? fileData.fileName, fileData.fileType)"
          :class="{'file-container-select': checkboxState}"
-         @click="checkboxState = !checkboxState"
+         @click.left="checkboxState = !checkboxState"
+         @click.right="getFileInfo(fileData.fileMd5)"
     >
         <img :src="fileData.fileCover" class="file-icon" :title="fileData.fileName">
         <span v-if="!fileData.isEdit">{{ fileData.fileName }}</span>
@@ -15,7 +16,7 @@
             @blur="saveFile"
             @keydown="exitEdit"
         />
-        <el-checkbox v-model="checkboxState" v-if="fileData.isFolder" class="check" />
+        <el-checkbox v-model="checkboxState" v-if="fileData.isFolder" class="check" @click="checkboxState = !checkboxState" />
     </div>
 </template>
 
@@ -29,8 +30,16 @@
     const addFile = inject('addFile')
     const removeFile = inject('removeFile')
     const getCurrentUrl = inject('getCurrentUrl')
+    const cleanSelect = inject('cleanSelect')
+    const preview = inject('preview')
+    const sendMd5 = inject('sendMd5')
     const fileEdit = ref(null)
     const emits = defineEmits(['close'])
+
+    const getFileInfo = (fileMD5) =>{
+        if(!fileMD5) return
+        sendMd5(fileMD5)
+    }
 
     watch(() => checkboxState.value, () =>{
         if(checkboxState.value){
@@ -96,11 +105,12 @@
         getFocus
     }))
 
-    const openFile = (isFolder, fileName) =>{
+    const openFile = (isFolder, fileMD5, fileType) =>{
         if(isFolder){
-
+            preview(fileMD5, fileType)
         }else {
-            changeUrl(fileName)
+            changeUrl(fileMD5)
+            cleanSelect()
         }
     }
 
