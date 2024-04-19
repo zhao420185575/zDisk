@@ -23,6 +23,7 @@ export const uploadFile = (params) =>{
             })
             .catch(error =>{
                 console.log(error)
+                responseMessage(0, error.response.data.msg)
                 reject(false)
             })
     })
@@ -155,6 +156,23 @@ export const reFileName = (params) =>{
         })
             .then(res => {
                 resolve(true)
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}
+
+export const getShareKey = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/file/filesharing', params,{
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res => {
+                resolve(res.data.data)
             })
             .catch(error =>{
                 console.log(error)

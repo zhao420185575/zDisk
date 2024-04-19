@@ -9,15 +9,37 @@
         </div>
 
         <Menu ref="menu" />
+
+      <el-dialog v-model="shareState" title="文件分享" width="400" draggable>
+          <div class="dialog-box" v-if="!shareInfo">
+              <span style="font-size: 18px">{{ shareData.fileName }}</span>
+              <img :src="shareData.fileImg" />
+              <div class="radio-box">
+                    <span>是否使用密码</span>
+                    <el-radio-group v-model="lockState" class="ml-4">
+                      <el-radio :value="true" size="large">加密</el-radio>
+                      <el-radio :value="false" size="large">不加密</el-radio>
+                    </el-radio-group>
+                   <el-input v-model="lockKey" placeholder="请输入加密密钥" v-show="lockState" />
+              </div>
+            <el-button type="primary" @click="submitShare">确认分享</el-button>
+          </div>
+          <div class="share-info" v-else>
+              <span>分享链接：<a :href="shareInfo.key">{{ baseURL + shareInfo.key }}</a></span>
+              <span v-if="shareInfo.pwd">提取码：{{ shareInfo.pwd }}</span>
+            <el-button type="primary" @click="copyUrl(shareInfo.key, shareInfo.pwd)">复制到剪切板</el-button>
+          </div>
+      </el-dialog>
+
     </div>
 </template>
 
 <script setup>
-  import {inject, nextTick, onMounted, provide, ref} from "vue";
+import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
     import DiskFile from "@/views/IndexView/components/DiskFile.vue";
-    import {downloadFile, getFileArr} from "@/api/IndexView/index.js";
+  import {downloadFile, getFileArr, getShareKey} from "@/api/IndexView/index.js";
     import Menu from "@/views/IndexView/components/ContextMenu/Menu.vue";
-  import {responseMessage} from "@/api/request.js";
+  import {baseURL, responseMessage} from "@/api/request.js";
 
 
     const fileData = ref([])
@@ -30,9 +52,58 @@
     const clientX = ref()
     const clientY = ref()
 
+    const shareState = ref(false)
+
     const selectIndex = ref(null)
 
     const getCurrentUrl = inject('getCurrentUrl')
+
+    const shareData = ref(null)
+
+    const lockState = ref(false)
+    const lockKey = ref('')
+
+    const shareInfo = ref(null)
+
+    watch(() => shareState.value, (value) =>{
+          if(!value){
+            lockState.value = false
+            lockKey.value = ''
+            shareInfo.value = null
+          }
+    })
+
+
+    const submitShare = async () =>{
+
+        if(lockKey.value === '' && lockState.value === true){ responseMessage(2, '请填写密钥'); return }
+        shareInfo.value = await getShareKey({
+          fileMD5: shareData.value.fileMd5,
+          isExtractTheCode: lockState.value ? 1 : 0,
+          CustomPasswords: lockKey.value
+        })
+        if(shareInfo.value){
+            responseMessage(1, '分享成功')
+            console.log(shareInfo.value)
+        }
+
+    }
+
+    const copyUrl = async (url, pwd) =>{
+
+      try {
+        let link = `分享链接：${baseURL + url}${pwd ? `提取码：${pwd}` : ''}`
+        await navigator.clipboard.writeText(link);
+        responseMessage(1, '已复制到剪切板')
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    }
+
+    const openShare = (data) =>{
+      shareState.value = true
+      shareData.value = data
+    }
 
     const cleanSelect = () =>{
       getFileList(getCurrentUrl())
@@ -87,13 +158,16 @@
         }
     }
 
-    const getFileList = async (url) =>{
+    const getFileList = async (url = getCurrentUrl()) =>{
         fileData.value = await getFileArr(url)
     }
 
   const changeEdit = () =>{
       fileRef.value[selectIndex.value].rename()
+
   }
+
+
 
   const getCurrentIndex = (index) =>{
     selectIndex.value = index
@@ -106,6 +180,7 @@
     provide('sendMd5', sendMd5)
     provide('changeEdit', changeEdit)
     provide('getCurrentIndex', getCurrentIndex)
+    provide('openShare', openShare)
 
 
 
@@ -173,5 +248,27 @@
         margin-top: 10px;
         font-size: 24px;
         color: #A8ABB2;
+    }
+    .dialog-box{
+      width: 100%;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      user-select: none;
+      justify-content: space-around;
+    }
+    .dialog-box > img{
+      width: 100px;
+      height: 100px;
+    }
+    .dialog-box .radio-box{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .share-info{
+      display: flex;
+      flex-direction: column;
     }
 </style>

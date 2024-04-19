@@ -16,7 +16,7 @@
             @blur="handleBlur"
             @keydown="exitEdit"
         />
-        <el-checkbox v-model="checkboxState" v-if="!fileData.isFolder" class="check" @click="checkboxState = !checkboxState" />
+        <el-checkbox v-model="checkboxState" v-if="!fileData.isFolder && !reNameState" class="check" @click="checkboxState = !checkboxState" />
     </div>
 </template>
 
@@ -34,6 +34,7 @@
     const preview = inject('preview')
     const sendMd5 = inject('sendMd5')
     const getCurrentIndex = inject('getCurrentIndex')
+    const getFileList = inject('getFileList')
     const fileEdit = ref(null)
     const emits = defineEmits(['close'])
 
@@ -41,7 +42,7 @@
 
     const oldName = ref(null)
 
-    const isEscPressed = ref()
+    const isEscPressed = ref(false)
 
     const handleBlur = () => {
       if (!isEscPressed.value) {
@@ -55,7 +56,9 @@
         const fileInfo = {
             fileMd5: fileData.isFolder ? fileData.fileName : fileData.fileMd5,
             isFolder: fileData.isFolder,
-            path: getCurrentUrl()
+            path: getCurrentUrl(),
+            fileName: fileData.fileName,
+            fileImg: fileData.fileCover
         }
         sendMd5(fileInfo)
         getCurrentIndex(props.index)
@@ -65,6 +68,7 @@
         oldName.value = props.fileData.fileName
         props.fileData.isEdit = true
         reNameState.value = true
+
         getFocus()
     }
 
@@ -95,12 +99,15 @@
 
     const saveFile = async () =>{
         if (reNameState.value){
+
             if(props.fileData.fileName === oldName.value || props.fileData.fileName === ''){
                 getFocus()
                 responseMessage(2, `${props.fileData.isFolder ? '文件夹' : '文件'}名称为空或未修改,取消重命名请按ESC键`)
+                return
             }
             if(await reFileName({ newFileName: props.fileData.fileName, fileMd5: props.fileData.isFolder ? oldName.value : props.fileData.fileMd5, path: getCurrentUrl(), isFolder: props.fileData.isFolder })){
-                console.log('重命名成功')
+              getFileList()
+              responseMessage(1, '重命名成功')
               props.fileData.isEdit = false
               reNameState.value = false
             }

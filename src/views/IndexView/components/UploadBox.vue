@@ -3,6 +3,7 @@
     import { uploadFile, verifySharding, mergeFile } from '@/api/IndexView/index.js'
     import SparkMD5 from 'spark-md5'
     import {responseMessage} from "@/api/request.js";
+    import { genFileId } from 'element-plus'
 
     const props = defineProps(['diskDeskRef'])
 
@@ -10,7 +11,7 @@
     const fileList = ref([])
     const getCurrentUrl = inject('getCurrentUrl')
 
-
+    const uploadRef = ref(null)
 
     const onUpload = async (File) => {
       const chunkSize = 30 * 1024 * 1024; // 分片大小
@@ -113,6 +114,14 @@
     }
 
 
+    const handleExceed = (files) =>{
+        uploadRef.value.clearFiles()
+        const file = files[0]
+        file.uid = genFileId()
+        uploadRef.value.handleStart(file)
+    }
+
+
     const switchState = () =>{
         uploadBox.value = !uploadBox.value
     }
@@ -135,8 +144,9 @@
           v-model:file-list="fileList"
           :on-change="onUpload"
           :auto-upload="false"
-          ref="uploadfile"
+          ref="uploadRef"
           :limit="1"
+          :on-exceed="handleExceed"
           :show-file-list="false"
       >
         <div class="upload-demo">

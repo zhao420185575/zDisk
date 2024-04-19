@@ -3,27 +3,27 @@
         :default-active="activeIndex"
         class="el-menu-vertical-demo nav"
         :collapse="true"
-        :router="true"
+
     >
-        <el-menu-item index="MyDisk">
+        <el-menu-item index="MyDisk" @click="router.push({name: 'MyDisk'})">
             <el-icon><Files /></el-icon>
             <template #title>我的存储空间</template>
         </el-menu-item>
 
-        <el-menu-item index="Share">
+        <el-menu-item index="Share" @click="router.push({name: 'Share'})">
             <el-icon><Connection /></el-icon>
             <template #title>文件分享</template>
         </el-menu-item>
 
-        <el-menu-item index="Center">
+        <el-menu-item index="Center" @click="router.push({name: 'Center'})">
             <el-icon><User /></el-icon>
             <template #title>个人中心</template>
         </el-menu-item>
 
-        <el-menu-item index="Setting">
-            <el-icon><Setting /></el-icon>
-            <template #title>设置</template>
-        </el-menu-item>
+<!--        <el-menu-item index="Setting" @click="router.push({name: 'Setting'})">-->
+<!--            <el-icon><Setting /></el-icon>-->
+<!--            <template #title>设置</template>-->
+<!--        </el-menu-item>-->
 
     </el-menu>
 </template>

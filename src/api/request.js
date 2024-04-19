@@ -30,7 +30,7 @@ export const responseMessage = (status, msg) =>{
     }
 }
 
-export const baseURL = 'http://10.205.103.88:8881'
+export const baseURL = 'https://scorebank.gdatv.edu.cn:8093/zDisk/'
 
 export const service = axios.create({
     baseURL: baseURL,
@@ -40,7 +40,7 @@ const excludePaths = ['/api/login', '/api/register', '/api/captcha', '/api/mail'
 
 service.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
-    console.log(token)
+
     if (token) {
         config.headers.token = token;
     }

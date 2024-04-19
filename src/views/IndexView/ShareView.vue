@@ -2,26 +2,59 @@
     import { ref, onMounted, watch, onBeforeMount } from "vue";
     import { useRouter } from 'vue-router'
     import {getShareFile} from "@/api/IndexView/index.js";
+    import {responseMessage} from "@/api/request.js";
 
     const router = useRouter()
 
-    const { secret } = router.currentRoute.value.params
-    const { pwd } = router.currentRoute.value.query
+    const  secret = ref()
+    const  pwd  = ref()
+
+    const shareState = ref(false)
 
     const fileData = ref()
 
-    onMounted(async () =>{
-      if(secret !== ''){
+    const isPwd = ref(false)
+
+    const getFile = async () =>{
+      if(secret.value !== ''){
         const res = await getShareFile({
-          secret: secret,
-          pwd: pwd
+          secret: secret.value,
+          pwd: pwd.value
+        })
+        if(res){
+          fileData.value = res
+        }else {
+          shareState.value = true
+          isPwd.value = true
+          responseMessage(0, '缺少提取码或提取码错误')
+        }
+      }else {
+        responseMessage(0, '缺少提取码或提取码错误')
+
+      }
+    }
+
+
+    onMounted(async () =>{
+      secret.value = router.currentRoute.value.params.secret
+      pwd.value = router.currentRoute.value.query.pwd
+
+      if(secret.value !== ''){
+        const res = await getShareFile({
+          secret: secret.value,
+          pwd: pwd.value
         })
 
         if(res){
           fileData.value = res
         }else {
-
+          shareState.value = true
+          isPwd.value = true
+          responseMessage(0, '缺少提取码或提取码错误')
         }
+      }else {
+        shareState.value = true
+
       }
 
 
@@ -31,6 +64,17 @@
 </script>
 
 <template>
+  <el-dialog v-model="shareState" title="请输入密钥" width="400" draggable>
+    <el-form-item label="请输入口令">
+      <el-input v-model="secret" style="width: 100%" placeholder="请输入密钥" />
+    </el-form-item>
+
+    <el-form-item label="请输入提取码" v-if="isPwd">
+      <el-input v-model="pwd"  style="width: 240px" placeholder="请输入提取码" />
+    </el-form-item>
+
+    <el-button type="primary" @click="getFile">获取</el-button>
+  </el-dialog>
     <div class="share-box">
         <div class="main-box">
             <div class="header-box">

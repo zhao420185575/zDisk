@@ -10,6 +10,8 @@ import {responseMessage} from "@/api/request.js";
     const getCurrentUrl = inject('getCurrentUrl')
     const download = inject('download')
     const changeEdit = inject('changeEdit')
+    const getFileList = inject('getFileList')
+  const openShare = inject('openShare')
 
     const shareData = ref()
 
@@ -45,7 +47,7 @@ import {responseMessage} from "@/api/request.js";
     }
 
     const getMd5 = (fileData) =>{
-        removeData.value = reNameData.value =  fileData
+        removeData.value = reNameData.value = shareData.value =  fileData
     }
 
     onMounted(() =>{
@@ -69,10 +71,18 @@ import {responseMessage} from "@/api/request.js";
           fileMd5: removeData.value.fileMd5,
           isFolder: removeData.value.isFolder
         })){
+          getFileList()
           responseMessage(1, '删除成功')
           onClose()
+
         }
 
+    }
+
+    const shareFile = () =>{
+        console.log(shareData.value)
+        openShare(shareData.value)
+        onClose()
     }
 
     const reFileName = () =>{
@@ -115,7 +125,7 @@ import {responseMessage} from "@/api/request.js";
             <el-icon><Edit /></el-icon>
             <span>重命名</span>
           </li>
-          <li v-show="shareData" @click="reFileName">
+          <li v-show="shareData" @click="shareFile">
             <el-icon><Share /></el-icon>
             <span>分享</span>
           </li>
