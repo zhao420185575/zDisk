@@ -22,7 +22,7 @@
 
 <script setup>
     import { defineProps, inject, nextTick, onMounted, ref, watch, defineEmits} from 'vue'
-    import { createFolder } from "@/api/IndexView/index.js";
+    import {createFolder, reFileName} from "@/api/IndexView/index.js";
     import {responseMessage} from "@/api/request.js";
 
     const checkboxState = ref(false)
@@ -98,7 +98,11 @@
             if(props.fileData.fileName === oldName.value || props.fileData.fileName === ''){
                 getFocus()
                 responseMessage(2, `${props.fileData.isFolder ? '文件夹' : '文件'}名称为空或未修改,取消重命名请按ESC键`)
-                console.log('空')
+            }
+            if(await reFileName({ newFileName: props.fileData.fileName, fileMd5: props.fileData.isFolder ? oldName.value : props.fileData.fileMd5, path: getCurrentUrl(), isFolder: props.fileData.isFolder })){
+                console.log('重命名成功')
+              props.fileData.isEdit = false
+              reNameState.value = false
             }
         }else {
           if(props.fileData.fileName === '') {

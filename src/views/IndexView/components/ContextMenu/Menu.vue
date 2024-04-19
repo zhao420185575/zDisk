@@ -11,14 +11,15 @@ import {responseMessage} from "@/api/request.js";
     const download = inject('download')
     const changeEdit = inject('changeEdit')
 
+    const shareData = ref()
 
-const removeData = ref(null)
-    const reNameData = ref(null)
+  const removeData = ref(null)
+      const reNameData = ref(null)
 
-    const createFolder = () =>{
-        addCreate()
-        onClose()
-    }
+      const createFolder = () =>{
+          addCreate()
+          onClose()
+      }
 
 
 
@@ -113,6 +114,10 @@ const removeData = ref(null)
           <li v-show="reNameData" @click="reFileName">
             <el-icon><Edit /></el-icon>
             <span>重命名</span>
+          </li>
+          <li v-show="shareData" @click="reFileName">
+            <el-icon><Share /></el-icon>
+            <span>分享</span>
           </li>
         </ul>
     </div>

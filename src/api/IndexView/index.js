@@ -145,3 +145,20 @@ export const deleteFile = (params) =>{
             })
     })
 }
+
+export const reFileName = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/file/FileRenaming', params,{
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res => {
+                resolve(true)
+            })
+            .catch(error =>{
+                console.log(error)
+                reject(false)
+            })
+    })
+}

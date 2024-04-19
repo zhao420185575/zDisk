@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import {responseMessage} from "@/api/request.js";
 
 
 const router = createRouter({
@@ -46,6 +47,17 @@ const router = createRouter({
           ]
       }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+
+    let token = localStorage.getItem('token')
+    if (to.name !== 'login' && (token === '' || token === undefined || token === null)) {
+        responseMessage(0, '未登录')
+        router.push({ name: 'login' })
+    } else {
+        next();
+    }
 })
 
 export default router

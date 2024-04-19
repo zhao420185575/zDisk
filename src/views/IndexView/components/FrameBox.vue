@@ -154,6 +154,8 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
+      max-width: 100%;
+      max-height: 100%;
     }
     .frame-container object{
       width: 100%;
