@@ -99,7 +99,7 @@ const regFormData = ref({
 
 const checkEmail = (rule, value, callback) =>{
   let reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/
-  if(value == ''){
+  if(value === ''){
     return callback(new Error('邮箱不能为空'))
   }
   if(reg.test(value)){
@@ -109,9 +109,9 @@ const checkEmail = (rule, value, callback) =>{
 }
 
 const checkConfirmPassword = (rule, value, callback) => {
-  if(value == ''){
+  if(value === ''){
     return callback(new Error('确认密码不能为空'))
-  } else if(regFormData.value.password != value){
+  } else if(regFormData.value.password !== value){
     return callback(new Error('密码和确认密码不一致，请重新输入'))
   }
   return callback()
@@ -134,6 +134,27 @@ const sendCaptcha = async () =>{
 }
 
 const onSubmit = async () =>{
+  if(regFormData.value.email === ''){
+    return ElMessage({
+      message: '邮箱不能为空',
+      type: 'warning'
+    })
+  } else if(regFormData.value.password === ''){
+    return ElMessage({
+      message: '密码不能为空',
+      type: 'warning'
+    })
+  } else if(regFormData.value.confirmPassword === ''){
+    return ElMessage({
+      message: '确认密码不能为空',
+      type: 'warning'
+    })
+  } else if(regFormData.value.emailCode === ''){
+    return ElMessage({
+      message: '验证码不能为空',
+      type: 'warning'
+    })
+  }
   if(await register(regFormData.value)){
     switchFunc()
   }
@@ -152,7 +173,6 @@ const handleTimeChange = () => {
     }, 1000)
   }
 }
-
 
 </script>
 

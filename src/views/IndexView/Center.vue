@@ -101,7 +101,7 @@ const sendEmailCode = () => {/* 发送邮箱验证码 */
           </el-form-item>
           <el-form-item label="验证码" prop="emailCode" show-message>
             <el-input style="max-width: 40%" v-model="modifyPasswordForm.emailCode" />
-            <el-button class="sendCodeBtn" @click="sendEmailCode">发送验证码</el-button>
+            <el-button type="primary" class="sendCodeBtn" @click="sendEmailCode">发送验证码</el-button>
           </el-form-item>
           <el-form-item label="新密码" prop="newPassword" show-message>
             <el-input type="password" v-model="modifyPasswordForm.newPassword" />
@@ -109,7 +109,10 @@ const sendEmailCode = () => {/* 发送邮箱验证码 */
 
           <!-- 表单操作 -->
           <el-form-item class="operation">
-            <el-button type="primary" @click="updatePassword(modifyPasswordForm)">保存</el-button>
+            <el-button
+                type="primary"
+                @click="updatePassword(modifyPasswordForm)"
+            >保存</el-button>
             <el-button @click="resetForm2(modifyPasswordForm)">重置</el-button>
           </el-form-item>
         </el-form>
@@ -121,10 +124,10 @@ const sendEmailCode = () => {/* 发送邮箱验证码 */
 <style scoped>
 .share-box {
   width: 100%;
-  height: 1050px;
+  height: 100%;
   position: relative;
-  background: #f0f2f5;
-  padding: 10px;
+  background: #F0F2F5;
+  padding: 14px;
   box-sizing: border-box;
 }
 
@@ -137,9 +140,8 @@ const sendEmailCode = () => {/* 发送邮箱验证码 */
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  min-width: 800px;
-  min-height: 1050px;
-  overflow: hidden;
+  min-width: 40%;
+  min-height: 90%;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -164,4 +166,5 @@ const sendEmailCode = () => {/* 发送邮箱验证码 */
 .sendCodeBtn {
   margin-left: 5%;
 }
+
 </style>

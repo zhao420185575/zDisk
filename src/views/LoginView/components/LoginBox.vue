@@ -39,6 +39,7 @@
             <el-input
                 v-model="formData.graphicsCode"
                 size="large"
+                clearable
                 placeholder="请输入验证码"
             >
               <template #prefix>
@@ -67,6 +68,7 @@
 <script setup>
 import { onMounted, ref, inject } from "vue";
 import { login, getCaptchaImg } from "@/api/LoginView/index.js";
+import { ElMessage } from 'element-plus'
 import router from "@/router/index.js";
 
 
@@ -87,6 +89,17 @@ const formRules = {
 
 const captchaImg = ref()
 const onSubmit = async () =>{
+  if(formData.value.username === '' || formData.value.password === ''){
+    return ElMessage({
+      message: '账号和密码不能为空',
+      type: 'warning'
+    })
+  } else if(formData.value.graphicsCode === ''){
+    return ElMessage({
+      message: '验证码不能为空',
+      type: 'warning'
+    })
+  }
   if(await login(formData.value)){
     router.push('/MyDisk')
   }
@@ -99,10 +112,10 @@ const getCaptcha = async () =>{
   captchaImg.value = captchaData.captchaBase64
 }
 
-
 onMounted(() =>{
   getCaptcha()
 })
+
 </script>
 
 <style scoped>

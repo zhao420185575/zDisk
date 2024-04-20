@@ -16,7 +16,11 @@ export const login = (params) =>{
                 }
                 else if(res.data.code === 404){
                     responseMessage(0, res.data.msg)
-                    resolve(true)
+                    resolve(false)
+                }
+                else if(res.data.code === 431){
+                    responseMessage(2, res.data.msg)
+                    resolve(false)
                 }
             })
             .catch(error =>{
@@ -44,7 +48,10 @@ export const register = (params) =>{
                     responseMessage(0, res.data.msg)
                     resolve(res)
                 }
-
+                else if(res.data.code === 402){
+                    responseMessage(0, res.data.msg)
+                    resolve(res)
+                }
             })
             .catch(error =>{
                 console.log(error)

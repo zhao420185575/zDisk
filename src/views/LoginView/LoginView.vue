@@ -23,11 +23,9 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, provide } from "vue";
+import {ref, onMounted, provide, nextTick} from "vue";
     import LoginBox from "./components/LoginBox.vue"
     import RegisterBox from "./components/RegisterBox.vue"
-
-
 
     const itemC = ref()
     const itemD = ref()
