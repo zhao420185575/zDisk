@@ -1,8 +1,8 @@
 <script setup>
 
-import FrameBox from "@/views/IndexView/components/FrameBox.vue";
-import {ref} from "vue";
-const frameRef = ref(null)
+  import FrameBox from "@/views/IndexView/components/FrameBox.vue";
+  import {ref} from "vue";
+  const frameRef = ref(null)
 
 </script>
 

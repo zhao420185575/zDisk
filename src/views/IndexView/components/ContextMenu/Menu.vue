@@ -27,7 +27,7 @@ import {responseMessage} from "@/api/request.js";
 
     const onClose = () =>{
         state.value = false
-        removeData.value = null
+      removeData.value = reNameData.value = shareData.value =  null
     }
 
     const showMenu = (x ,y, currentDom) =>{
@@ -80,7 +80,6 @@ import {responseMessage} from "@/api/request.js";
     }
 
     const shareFile = () =>{
-        console.log(shareData.value)
         openShare(shareData.value)
         onClose()
     }

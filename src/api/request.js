@@ -30,7 +30,7 @@ export const responseMessage = (status, msg) =>{
     }
 }
 
-export const baseURL = 'https://scorebank.gdatv.edu.cn:8093/zDisk/'
+export const baseURL = 'https://scorebank.gdatv.edu.cn:8093/zDiskServer/'
 
 export const service = axios.create({
     baseURL: baseURL,

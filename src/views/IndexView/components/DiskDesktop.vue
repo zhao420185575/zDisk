@@ -25,7 +25,7 @@
             <el-button type="primary" @click="submitShare">确认分享</el-button>
           </div>
           <div class="share-info" v-else>
-              <span>分享链接：<a :href="shareInfo.key">{{ baseURL + shareInfo.key }}</a></span>
+              <span>分享链接：<a :href="shareInfo.key">{{ strURL + shareInfo.key }}</a></span>
               <span v-if="shareInfo.pwd">提取码：{{ shareInfo.pwd }}</span>
             <el-button type="primary" @click="copyUrl(shareInfo.key, shareInfo.pwd)">复制到剪切板</el-button>
           </div>
@@ -64,6 +64,7 @@ import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
     const lockKey = ref('')
 
     const shareInfo = ref(null)
+    const strURL = ref('https://scorebank.gdatv.edu.cn:8093/zDisk')
 
     watch(() => shareState.value, (value) =>{
           if(!value){
@@ -92,7 +93,7 @@ import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
     const copyUrl = async (url, pwd) =>{
 
       try {
-        let link = `分享链接：${baseURL + url}${pwd ? `提取码：${pwd}` : ''}`
+        let link = `分享链接：${strURL.value + url}${pwd ? `提取码：${pwd}` : ''}`
         await navigator.clipboard.writeText(link);
         responseMessage(1, '已复制到剪切板')
       } catch (err) {
@@ -116,7 +117,7 @@ import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
 
     const addCreate =  () =>{
         fileData.value.push({
-            fileCover: "http://10.205.103.88:8881/icon/folder.png",
+            fileCover: `${baseURL}icon/folder.png`,
             fileCreateTime: "",
             fileMd5: '',
             fileName: "",
