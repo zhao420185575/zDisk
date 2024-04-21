@@ -96,16 +96,17 @@
             <div class="header-box">
                 <div class="left">
                     <div class="file-box">
-                      <el-icon><Setting /></el-icon>
+                      <el-icon><Folder /></el-icon>
                       <span>{{ fileData.fileName ? fileData.fileName :'未知文件夹' }}</span>
                     </div>
                     <div class="time-box">
                         <div class="upload-time">
                           <el-icon><Timer /></el-icon>
+                          <span>上传时间: </span>
                           <span>{{ fileData.ty }}</span>
                         </div>
                         <div class="overdue-time">
-                          <el-icon><Delete /></el-icon>
+                          <el-icon><AlarmClock /></el-icon>
                           <span>过期时间: </span>
                           <span>{{ getOverdueTime(fileData.ty) }}</span>
                         </div>
@@ -144,8 +145,8 @@
       border-radius: 14px;
       left: 50%;
       top: 50%;
-      min-width: 800px;
-      min-height: 1100px;
+      min-width: 40%;
+      min-height: 90%;
       transform: translate(-50%, -50%);
       overflow: hidden;
       display: flex;
@@ -159,7 +160,7 @@
     }
     .header-box .left{
       height: 100%;
-      width: 500px;
+      width: inherit;
       padding: 16px 20px;
       box-sizing: border-box;
       display: flex;
@@ -210,5 +211,11 @@
       left: 50%;
       top: 30%;
       transform: translateX(-50%);
+    }
+    .file-box > span:nth-of-type(2),
+    .upload-time > span:nth-of-type(2),
+    .overdue-time > span:nth-of-type(2),
+    .user-box > span:nth-of-type(2){
+      margin: 0 2%;
     }
 </style>

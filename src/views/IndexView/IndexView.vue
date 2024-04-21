@@ -5,7 +5,7 @@
             <div class="title-box">
                 <el-text class="title" size="large">{{ titleName }}</el-text>
                 <el-tooltip effect="dark" content="退出登录" placement="bottom">
-                  <el-button class="logout" type="info" :icon="Promotion" circle @click="logout" />
+                  <el-button class="logout" type="info" :icon="SwitchButton" circle @click="logout" />
                 </el-tooltip>
             </div>
             <router-view></router-view>
@@ -16,7 +16,7 @@
 <script setup>
     import Navigation from "@/views/IndexView/components/Navigation.vue";
     import { provide, ref } from "vue";
-    import { Promotion } from '@element-plus/icons-vue'
+    import { SwitchButton } from '@element-plus/icons-vue'
     import router from "@/router/index.js";
 
     const titleName = ref("")
