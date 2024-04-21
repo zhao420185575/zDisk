@@ -30,13 +30,11 @@ const rules1 = {/* 个人资料表单校验规则 */
 }
 const updataPersonalData = async (form) => {/* 提交个人资料表单 */
   if(!form) return
-  await modifyPersonalData.value.validate(async (valid, fields) => {
+  await modifyPersonalData.value.validate(async (valid) => {
     if (valid) {
       if (await updateUsername(modifyPersonalDataForm.value.userName)) {
         getData('更新')
       }
-    } else {
-      return responseMessage(2, fields.userName[0].message)
     }
   })
 }

@@ -4,6 +4,9 @@
         <div class="content-box">
             <div class="title-box">
                 <el-text class="title" size="large">{{ titleName }}</el-text>
+                <el-tooltip effect="dark" content="退出登录" placement="bottom">
+                  <el-button class="logout" type="info" :icon="Promotion" circle @click="logout" />
+                </el-tooltip>
             </div>
             <router-view></router-view>
         </div>
@@ -12,7 +15,9 @@
 
 <script setup>
     import Navigation from "@/views/IndexView/components/Navigation.vue";
-    import {nextTick, provide, ref} from "vue";
+    import { provide, ref } from "vue";
+    import { Promotion } from '@element-plus/icons-vue'
+    import router from "@/router/index.js";
 
     const titleName = ref("")
 
@@ -24,6 +29,11 @@
 
     const changeTitle = (name) =>{
         titleName.value = name
+    }
+
+    const logout = () => {
+      localStorage.removeItem('token')
+      router.push({ name: 'login' })
     }
 
     provide("changeTitle", changeTitle)
@@ -54,6 +64,7 @@
         user-select: none;
         box-sizing: border-box;
         border-bottom: 1px solid var(--el-border-color);
+        position: relative;
     }
     .title-box .title{
         color: #3f3e3e;
@@ -63,4 +74,8 @@
         'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
     }
 
+    .logout{
+      position: absolute;
+      right: 10%;
+    }
 </style>

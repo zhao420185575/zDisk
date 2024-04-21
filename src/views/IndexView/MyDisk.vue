@@ -1,6 +1,5 @@
 <template>
     <div class="main-box">
-
         <div class="function-box">
             <div class="url-box">
                 <el-input

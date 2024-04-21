@@ -113,7 +113,7 @@ const checkConfirmPassword = (rule, value, callback) => {
   if(value === ''){
     return callback(new Error('确认密码不能为空'))
   } else if(regFormData.value.password !== value){
-    return callback(new Error('密码和确认密码不一致，请重新输入'))
+    return callback(new Error('密码和确认密码不一致'))
   }
   return callback()
 }
@@ -121,33 +121,33 @@ const checkConfirmPassword = (rule, value, callback) => {
 const formRules = {
   email: [{ required: true, validator: checkEmail, trigger: 'blur' }],
   password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
-  confirmPassword: [{ required: true, validator: checkConfirmPassword, trigger: 'blur' }],
-  emailCode: [{ required:true, message: '邮箱验证码不能为空', trigger: 'blur' }]
+  confirmPassword: [{ required: true, validator: checkConfirmPassword, trigger: 'blur' }]
 }
 
 const isDisposed = ref(false)
 const time = ref(60)
 
 const sendCaptcha = async () =>{
-  regFormData.value.emailId = await getEmailCode(regFormData.value.email)
-  if(regFormData.value.emailId){
-    handleTimeChange()
-  }
+  await form.value.validate(async (valid) => {
+    if(valid){
+      regFormData.value.emailId = await getEmailCode(regFormData.value.email)
+      if(regFormData.value.emailId){
+        handleTimeChange()
+      }
+    }
+  })
 }
 
 const onSubmit = async () =>{
-  if(regFormData.value.email === ''){
-    return responseMessage(2, '邮箱不能为空')
-  } else if(regFormData.value.password === ''){
-    return responseMessage(2, '密码不能为空')
-  } else if(regFormData.value.confirmPassword === ''){
-    return responseMessage(2, '确认密码不能为空')
-  } else if(regFormData.value.emailCode === ''){
-    return responseMessage(2, '验证码不能为空')
-  }
-  if(await register(regFormData.value)){
-    switchFunc()
-  }
+  await form.value.validate(async (valid) => {
+    if(valid){
+      if(regFormData.value.emailCode.length === 0){
+        return responseMessage(2, '验证码不能为空')
+      } else if(await register(regFormData.value)){
+        switchFunc()
+      }
+    }
+  })
 }
 
 const onReset = () =>{
