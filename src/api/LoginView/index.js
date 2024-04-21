@@ -18,14 +18,10 @@ export const login = (params) =>{
                     responseMessage(0, res.data.msg)
                     resolve(false)
                 }
-                else if(res.data.code === 431){
-                    responseMessage(2, res.data.msg)
-                    resolve(false)
-                }
             })
             .catch(error =>{
                 console.log(error)
-
+                responseMessage(0, error.response.data.msg)
                 reject(false)
             })
     })
@@ -55,6 +51,7 @@ export const register = (params) =>{
             })
             .catch(error =>{
                 console.log(error)
+                responseMessage(0, error.response.data.msg)
                 reject(false)
             })
     })
@@ -92,5 +89,4 @@ export const getEmailCode = (params) =>{
                 reject(false)
             })
     })
-
 }

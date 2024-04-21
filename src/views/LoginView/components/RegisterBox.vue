@@ -8,6 +8,7 @@
           @submit.prevent=""
           ref="form"
           :rules="formRules"
+          :hide-required-asterisk="true"
       >
         <el-form-item label="邮箱" prop="email">
           <el-input
@@ -70,7 +71,7 @@
         </el-form-item>
         <div class="button-box">
           <button @click="onSubmit">注册</button>
-          <button>重置</button>
+          <button @click="onReset">重置</button>
         </div>
       </el-form>
     </div>
@@ -83,9 +84,9 @@
 </template>
 
 <script setup>
-import { inject, ref } from "vue";
+import {inject, ref} from "vue";
 import { getEmailCode, register } from "@/api/LoginView/index.js";
-import { ElMessage } from 'element-plus'
+import { responseMessage } from '@/api/request.js'
 
 const switchFunc = inject("switchFunc")
 const form = ref(null)
@@ -120,7 +121,8 @@ const checkConfirmPassword = (rule, value, callback) => {
 const formRules = {
   email: [{ required: true, validator: checkEmail, trigger: 'blur' }],
   password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
-  confirmPassword: [{ required: true, validator: checkConfirmPassword, trigger: 'blur' }]
+  confirmPassword: [{ required: true, validator: checkConfirmPassword, trigger: 'blur' }],
+  emailCode: [{ required:true, message: '邮箱验证码不能为空', trigger: 'blur' }]
 }
 
 const isDisposed = ref(false)
@@ -135,29 +137,21 @@ const sendCaptcha = async () =>{
 
 const onSubmit = async () =>{
   if(regFormData.value.email === ''){
-    return ElMessage({
-      message: '邮箱不能为空',
-      type: 'warning'
-    })
+    return responseMessage(2, '邮箱不能为空')
   } else if(regFormData.value.password === ''){
-    return ElMessage({
-      message: '密码不能为空',
-      type: 'warning'
-    })
+    return responseMessage(2, '密码不能为空')
   } else if(regFormData.value.confirmPassword === ''){
-    return ElMessage({
-      message: '确认密码不能为空',
-      type: 'warning'
-    })
+    return responseMessage(2, '确认密码不能为空')
   } else if(regFormData.value.emailCode === ''){
-    return ElMessage({
-      message: '验证码不能为空',
-      type: 'warning'
-    })
+    return responseMessage(2, '验证码不能为空')
   }
   if(await register(regFormData.value)){
     switchFunc()
   }
+}
+
+const onReset = () =>{
+  form.value.resetFields()
 }
 
 const handleTimeChange = () => {
@@ -168,7 +162,6 @@ const handleTimeChange = () => {
     isDisposed.value = true
     setTimeout(() => {
       time.value--
-      console.log(time.value)
       handleTimeChange()
     }, 1000)
   }

@@ -20,6 +20,9 @@ export const uploadFile = (params) =>{
         service.post(`/api/file/uploadfile`, params)
             .then(res => {
                 console.log(res)
+                if(resa.data.code === 200){
+                    resolve(res.data.data)
+                }
             })
             .catch(error =>{
                 console.log(error)
@@ -176,6 +179,83 @@ export const getShareKey = (params) =>{
             })
             .catch(error =>{
                 console.log(error)
+                reject(false)
+            })
+    })
+}
+
+export const getUserInfo = () => {
+    return new Promise((resolve, reject) => {
+        service.get('/api/PersonalCenter')
+            .then(res => {
+                resolve(res.data.data)
+            })
+            .catch(error => {
+                console.log(error)
+                reject(false)
+            })
+    })
+}
+
+export const updateUsername = (params) => {
+    return new Promise((resolve, reject) => {
+        service.post('/api/ChangeName', {
+            newName: params
+        }, {
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res => {
+                if(res.data.code === 200){
+                    resolve(true)
+                }
+            })
+            .catch(error => {
+                responseMessage(0, res.data.msg)
+                reject(false)
+            })
+    })
+}
+
+export const getEmailVerificationCode = (params) =>{
+    return new Promise((resolve, reject) =>{
+        service.post('/api/EmailVerificationCode', {
+            email: params
+        },{
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res =>{
+                resolve(res.data.data.emailID)
+            })
+            .catch(error =>{
+                reject(false)
+            })
+    })
+}
+
+export const updateUserPassword = (params) => {
+    const { emailId, emailCode, newPassword } = params
+    return new Promise((resolve, reject) => {
+        service.post('/api/ChangePassword', {
+            emailId: emailId,
+            emailCode: emailCode,
+            newPassword: newPassword
+        }, {
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        })
+            .then(res => {
+                if(res.data.code === 200) {
+                    responseMessage(1, res.data.data)
+                }
+                resolve(true)
+            })
+            .catch(error => {
+                responseMessage(0, res.data.msg)
                 reject(false)
             })
     })

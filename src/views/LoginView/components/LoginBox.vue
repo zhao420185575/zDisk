@@ -6,9 +6,9 @@
           :model="formData"
           label-position="top"
           @submit.prevent=""
-          status-icon
           ref="form"
           :rules="formRules"
+          :hide-required-asterisk="true"
       >
         <el-form-item label="账号" prop="username">
           <el-input
@@ -68,7 +68,7 @@
 <script setup>
 import { onMounted, ref, inject } from "vue";
 import { login, getCaptchaImg } from "@/api/LoginView/index.js";
-import { ElMessage } from 'element-plus'
+import { responseMessage } from '@/api/request.js'
 import router from "@/router/index.js";
 
 
@@ -90,15 +90,9 @@ const formRules = {
 const captchaImg = ref()
 const onSubmit = async () =>{
   if(formData.value.username === '' || formData.value.password === ''){
-    return ElMessage({
-      message: '账号和密码不能为空',
-      type: 'warning'
-    })
+    return responseMessage(2, '账号和密码不能为空')
   } else if(formData.value.graphicsCode === ''){
-    return ElMessage({
-      message: '验证码不能为空',
-      type: 'warning'
-    })
+    return responseMessage(2, '验证码不能为空')
   }
   if(await login(formData.value)){
     router.push('/MyDisk')

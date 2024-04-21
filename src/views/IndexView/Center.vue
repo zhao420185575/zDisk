@@ -1,40 +1,57 @@
 <script setup>
 import 'element-plus/dist/index.css'
-import { ref, reactive } from 'vue'
-/* 切换表单 */
+import { ref, onMounted } from 'vue'
+import { getEmailVerificationCode, getUserInfo, updateUsername, updateUserPassword} from '@/api/IndexView/index.js'
+import { responseMessage } from '@/api/request.js'
+import router from "@/router/index.js";
+const time = ref(60)
+const isDisposed = ref(false)
+//切换表单
 const radioGroup = ref('modifyPersonalData')
+//用户数据
+const myData = ref(null)
+//获取用户数据
+const getData = async (msg) => {
+  myData.value = await getUserInfo()
+  modifyPersonalDataForm.value = myData.value
+  modifyPasswordForm.value.email = myData.value.email
+  responseMessage(1, `${msg}用户信息成功`)
+}
 
 //以下是个人资料的表单数据
 const modifyPersonalData = ref(null)/* 个人资料表单dom */
-const modifyPersonalDataForm = reactive({/* 修改个人资料的form */
+const modifyPersonalDataForm = ref({/* 修改个人资料的form */
   userName: '',
-  userAccount: '',
-  joinDate: ''
+  email: '',
+  joinTime: ''
 })
 const rules1 = {/* 个人资料表单校验规则 */
-  userName: [{required: true, message: '用户名不能为空', trigger: 'blur'}]
+  userName: [{ required: true, message: '用户名不能为空', trigger: 'blur' }]
 }
 const updataPersonalData = async (form) => {/* 提交个人资料表单 */
   if(!form) return
-  await modifyPersonalData.value.validate((valid, fields) => {
+  await modifyPersonalData.value.validate(async (valid, fields) => {
     if (valid) {
-      console.log('校验通过', valid)
+      if (await updateUsername(modifyPersonalDataForm.value.userName)) {
+        getData('更新')
+      }
     } else {
-      console.log('校验失败', fields)
+      return responseMessage(2, fields.userName[0].message)
     }
   })
 }
 const resetForm1 = (form) => {/* 个人资料表单重置 */
   if (!form) return
-  modifyPersonalData.value.resetFields()
+  modifyPersonalDataForm.value.userName = null
 }
 
 
 //以下是修改密码的表单数据
 const modifyPassword = ref(null)/* 修改密码的dom */
-const modifyPasswordForm = reactive({/* 修改密码的form */
-  userAccount: '',
+const modifyPasswordForm = ref({/* 修改密码的form */
+  email: '',
   emailCode: '',
+  emailId: '',
   newPassword: ''
 })
 const rules2 = {/* 修改密码表单校验规则 */
@@ -43,21 +60,45 @@ const rules2 = {/* 修改密码表单校验规则 */
 }
 const updatePassword = async (form) => {
   if(!form) return
-  await modifyPassword.value.validate((valid, fields) => {
-    if (valid) {
-      console.log('校验通过', valid)
-    } else {
-      console.log('校验失败', fields)
-    }
-  })
+  let obj = {
+    emailId: modifyPasswordForm.value.emailId,
+    emailCode: modifyPasswordForm.value.emailCode,
+    newPassword: modifyPasswordForm.value.newPassword
+  }
+  if(await updateUserPassword(obj)){
+    localStorage.removeItem('token')
+    router.push({ name: 'login' })
+  }
 }
 const resetForm2 = (form) => {/* 个人资料表单重置 */
   if (!form) return
-  modifyPassword.value.resetFields()
+  modifyPasswordForm.value.emailCode = null
+  modifyPasswordForm.value.newPassword = null
 }
-const sendEmailCode = () => {/* 发送邮箱验证码 */
+const sendCaptcha = async () => {/* 发送邮箱验证码 */
+  modifyPasswordForm.value.emailId = await getEmailVerificationCode(modifyPasswordForm.value.email)
+  if(modifyPasswordForm.value.emailId){
+    handleTimeChange()
+  }
+}
 
+const handleTimeChange = () => {
+  if (time.value <= 0) {
+    isDisposed.value = false
+    time.value = 60
+  } else {
+    isDisposed.value = true
+    setTimeout(() => {
+      time.value--
+      handleTimeChange()
+    }, 1000)
+  }
 }
+
+
+onMounted(() => {
+  getData('获取')
+})
 
 </script>
 
@@ -70,18 +111,19 @@ const sendEmailCode = () => {/* 发送邮箱验证码 */
           <el-radio-button label="修改密码" value="modifyPassword" />
         </el-radio-group>
       </div>
+      <!--   修改资料   -->
       <div class="form-box" v-if="radioGroup === 'modifyPersonalData'">
-        <el-form style="max-width: 500px" status-icon label-width="auto" size="large"
+        <el-form style="max-width: 500px" label-width="auto" size="large"
                  ref="modifyPersonalData" :model="modifyPersonalDataForm" :rules="rules1">
           <!-- 表单信息 -->
           <el-form-item label="用户名" prop="userName" show-message>
             <el-input type="text" required v-model="modifyPersonalDataForm.userName"/>
           </el-form-item>
-          <el-form-item label="账号" prop="userAccount">
-            <el-input type="text" :disabled="true" v-model="modifyPersonalDataForm.userAccount" value="此处为用户邮箱" />
+          <el-form-item label="账号" prop="email">
+            <el-input type="text" :disabled="true" v-model="modifyPersonalDataForm.email" />
           </el-form-item>
-          <el-form-item label="创建时间" prop="joinDate">
-            <el-input type="text" :disabled="true" v-model="modifyPersonalDataForm.joinDate" value="此处为创建时间" />
+          <el-form-item label="创建时间" prop="joinTime">
+            <el-input type="text" :disabled="true" v-model="modifyPersonalDataForm.joinTime" />
           </el-form-item>
 
           <!-- 表单操作 -->
@@ -89,22 +131,28 @@ const sendEmailCode = () => {/* 发送邮箱验证码 */
             <el-button type="primary" @click="updataPersonalData(modifyPersonalDataForm)">保存</el-button>
             <el-button @click="resetForm1(modifyPersonalDataForm)">重置</el-button>
           </el-form-item>
-
         </el-form>
       </div>
+
+      <!--   修改密码   -->
       <div class="form-box" v-else>
-        <el-form style="max-width: 500px" status-icon label-width="auto" size="large"
+        <el-form style="max-width: 500px" label-width="auto" size="large"
                  ref="modifyPassword" :model="modifyPasswordForm" :rules="rules2">
           <!-- 表单信息 -->
-          <el-form-item label="账号" prop="userAccount">
-            <el-input type="text" required :disabled="true" value="此处为用户邮箱"/>
+          <el-form-item label="账号" prop="email">
+            <el-input type="text" required :disabled="true" v-model="modifyPasswordForm.email"/>
           </el-form-item>
           <el-form-item label="验证码" prop="emailCode" show-message>
             <el-input style="max-width: 40%" v-model="modifyPasswordForm.emailCode" />
-            <el-button type="primary" class="sendCodeBtn" @click="sendEmailCode">发送验证码</el-button>
+            <el-button
+                type="primary"
+                class="sendCodeBtn"
+                :disabled="isDisposed"
+                @click="sendCaptcha"
+            >{{ isDisposed ? `${time}s` : '获取验证码' }}</el-button>
           </el-form-item>
           <el-form-item label="新密码" prop="newPassword" show-message>
-            <el-input type="password" v-model="modifyPasswordForm.newPassword" />
+            <el-input type="password" show-password v-model="modifyPasswordForm.newPassword" />
           </el-form-item>
 
           <!-- 表单操作 -->
