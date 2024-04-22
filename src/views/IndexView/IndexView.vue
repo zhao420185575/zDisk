@@ -4,9 +4,7 @@
         <div class="content-box">
             <div class="title-box">
                 <el-text class="title" size="large">{{ titleName }}</el-text>
-                <el-tooltip effect="dark" content="退出登录" placement="bottom">
-                  <el-button class="logout" type="info" :icon="SwitchButton" circle @click="logout" />
-                </el-tooltip>
+
             </div>
             <router-view></router-view>
         </div>
@@ -31,10 +29,7 @@
         titleName.value = name
     }
 
-    const logout = () => {
-      localStorage.removeItem('token')
-      router.push({ name: 'login' })
-    }
+
 
     provide("changeTitle", changeTitle)
 
@@ -74,8 +69,5 @@
         'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
     }
 
-    .logout{
-      position: absolute;
-      right: 10%;
-    }
+
 </style>
