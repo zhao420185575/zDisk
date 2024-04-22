@@ -80,10 +80,19 @@ const formData = ref({
   graphicsCode: '',
   graphicsCodeId: ''
 })
+const checkPassword = (rule, value, callback) => {
+  if(value === ''){
+    return callback(new Error('密码不能为空'))
+  } else if(value.length < 6){
+    return callback(new Error('密码长度不能小于6位'))
+  } else {
+    callback()
+  }
+}
 
 const formRules = {
   username: [{ required: true, message: '账号不能为空', trigger: 'blur' }],
-  password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
+  password: [{ required: true, validator: checkPassword, trigger: 'blur' }],
   graphicsCode: [{ required: true, message: '验证码不能为空', trigger: 'blur' }]
 }
 

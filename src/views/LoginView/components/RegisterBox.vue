@@ -98,7 +98,7 @@ const regFormData = ref({
   emailCode: ''
 })
 
-const checkEmail = (rule, value, callback) =>{
+const checkEmail = (rule, value, callback) => {
   let reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/
   if(value === ''){
     return callback(new Error('邮箱不能为空'))
@@ -107,6 +107,16 @@ const checkEmail = (rule, value, callback) =>{
     return callback()
   }
   return callback(new Error('请输入正确的邮箱格式'))
+}
+
+const checkPassword = (rule, value, callback) => {
+  if(value === ''){
+    return callback(new Error('密码不能为空'))
+  } else if(value.length < 6){
+    return callback(new Error('密码长度不能小于6位'))
+  } else {
+    callback()
+  }
 }
 
 const checkConfirmPassword = (rule, value, callback) => {
@@ -120,7 +130,7 @@ const checkConfirmPassword = (rule, value, callback) => {
 
 const formRules = {
   email: [{ required: true, validator: checkEmail, trigger: 'blur' }],
-  password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
+  password: [{ required: true, validator: checkPassword, trigger: 'blur' }],
   confirmPassword: [{ required: true, validator: checkConfirmPassword, trigger: 'blur' }]
 }
 

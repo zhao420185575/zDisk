@@ -52,9 +52,17 @@ const modifyPasswordForm = ref({/* 修改密码的form */
   emailId: '',
   newPassword: ''
 })
+const checkNewPassword = (rule, value, callback) => {
+  if(value === ''){
+    return callback(new Error('新密码不能为空'))
+  } else if(value.length < 6){
+    return callback(new Error('新密码长度不能小于6位'))
+  }
+}
+
 const rules2 = {/* 修改密码表单校验规则 */
   emailCode: [{required: true, message: '验证码不能为空', trigger: 'blur'}],
-  newPassword: [{required: true, message: '新密码不能为空', trigger: 'blur'}],
+  newPassword: [{required: true, validator: checkNewPassword, trigger: 'blur'}],
 }
 const updatePassword = async (form) => {
   if(!form) return
