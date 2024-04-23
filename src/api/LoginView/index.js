@@ -22,7 +22,7 @@ export const login = (params) =>{
             .catch(error =>{
                 console.log(error)
                 responseMessage(0, error.response.data.msg)
-                reject(false)
+                reject(error)
             })
     })
 }

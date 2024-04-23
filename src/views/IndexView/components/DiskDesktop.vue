@@ -182,16 +182,21 @@ import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
     provide('changeEdit', changeEdit)
     provide('getCurrentIndex', getCurrentIndex)
     provide('openShare', openShare)
-
+    const isDisabled = inject('isDisabled')
+    const loading = inject('loading')
 
 
     const download = async () =>{
       if(fileList.value.length === 0) {
+        isDisabled.value = false
+        loading.value = false
         responseMessage(2, '请勾选需要下载的文件')
         return
       }
       if(await downloadFile(fileList.value)){
           // cleanSelect()
+          isDisabled.value = false
+          loading.value = false
           responseMessage(1, '下载成功')
       }
     }

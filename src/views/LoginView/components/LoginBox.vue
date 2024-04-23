@@ -103,8 +103,14 @@ const onSubmit = async () =>{
   } else if(formData.value.graphicsCode === ''){
     return responseMessage(2, '验证码不能为空')
   }
-  if(await login(formData.value)){
-    router.push('/MyDisk')
+  try {
+    if(await login(formData.value)){
+      router.push('/MyDisk')
+    }
+  } catch (error){
+    if(error.response.data.code === 430){
+      await getCaptcha()
+    }
   }
 }
 

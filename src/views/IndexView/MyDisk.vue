@@ -20,7 +20,8 @@
                   <span>上传文件</span>
               </el-button>
 
-              <el-button type="success" @click="download">
+              <el-button type="success" @click="download" :disabled="isDisabled"
+                         v-loading="loading" element-loading-text="下载中..." element-loading-background="rgba(255, 255, 255, 0.4)">
                 <el-icon><Download /></el-icon>
                 <span>下载/批量下载</span>
               </el-button>
@@ -41,23 +42,18 @@
 </template>
 
 <script setup>
-    import {inject, nextTick, provide, ref, watch} from "vue";
+    import { nextTick, provide, ref, watch } from "vue";
     import DiskDesktop from "@/views/IndexView/components/DiskDesktop.vue";
     import UploadBox from "@/views/IndexView/components/UploadBox.vue";
-    import FrameBox from "@/views/IndexView/components/FrameBox.vue";
-
 
 
     const url = ref("/")
     const oldUrl = ref("/")
-
     const desktop = ref(null)
-
     const getFileList = ref(null)
-
-
-
     const uploadBox = ref(null)
+    const isDisabled = ref(false)
+    const loading = ref(false)
 
     const createFolder = () =>{
         desktop.value.addCreate()
@@ -82,7 +78,8 @@
     }
 
     const download = () =>{
-
+        isDisabled.value = true
+        loading.value = true
         desktop.value.download()
     }
 
@@ -96,6 +93,8 @@
     provide('changeUrl', changeUrl)
     provide('getCurrentUrl', getCurrentUrl)
     provide('download', download)
+    provide('isDisabled', isDisabled)
+    provide('loading', loading)
 </script>
 
 <style scoped>

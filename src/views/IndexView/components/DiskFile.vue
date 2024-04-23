@@ -21,9 +21,9 @@
 </template>
 
 <script setup>
-    import { defineProps, inject, nextTick, onMounted, ref, watch, defineEmits} from 'vue'
-    import {createFolder, reFileName} from "@/api/IndexView/index.js";
-    import {responseMessage} from "@/api/request.js";
+    import { defineProps, inject, nextTick, ref, watch, defineEmits} from 'vue'
+    import { createFolder, reFileName } from "@/api/IndexView/index.js";
+    import { responseMessage } from "@/api/request.js";
 
     const checkboxState = ref(false)
 

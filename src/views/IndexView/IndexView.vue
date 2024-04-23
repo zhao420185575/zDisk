@@ -4,7 +4,6 @@
         <div class="content-box">
             <div class="title-box">
                 <el-text class="title" size="large">{{ titleName }}</el-text>
-
             </div>
             <router-view></router-view>
         </div>
@@ -14,8 +13,6 @@
 <script setup>
     import Navigation from "@/views/IndexView/components/Navigation.vue";
     import { provide, ref } from "vue";
-    import { SwitchButton } from '@element-plus/icons-vue'
-    import router from "@/router/index.js";
 
     const titleName = ref("")
 

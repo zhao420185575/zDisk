@@ -1,5 +1,5 @@
 <script setup>
-    import {inject, nextTick, ref} from "vue";
+import {inject, nextTick, ref} from "vue";
     import { uploadFile, verifySharding, mergeFile } from '@/api/IndexView/index.js'
     import SparkMD5 from 'spark-md5'
     import {responseMessage} from "@/api/request.js";
@@ -10,10 +10,11 @@
     const uploadBox = ref(false)
     const fileList = ref([])
     const getCurrentUrl = inject('getCurrentUrl')
-
+    const loading = ref(false)
     const uploadRef = ref(null)
 
     const onUpload = async (File) => {
+      loading.value = true
       const chunkSize = 30 * 1024 * 1024; // 分片大小
       const file = File.raw // 文件
       const fileSize = File.size // 文件大小
@@ -77,6 +78,7 @@
             nextTick(() =>{
               props.diskDeskRef.getFileList(getCurrentUrl())
             })
+            loading.value = false
             responseMessage(1, '上传成功')
         }
     }
@@ -121,7 +123,6 @@
         uploadRef.value.handleStart(file)
     }
 
-
     const switchState = () =>{
         uploadBox.value = !uploadBox.value
     }
@@ -138,8 +139,10 @@
         width="800"
         draggable
     >
-
       <el-upload
+          v-loading="loading"
+          element-loading-text="上传中..."
+          element-loading-background="rgba(255, 255, 255, .7)"
           drag
           v-model:file-list="fileList"
           :on-change="onUpload"
