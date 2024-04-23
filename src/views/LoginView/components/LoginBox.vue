@@ -43,7 +43,7 @@
                 placeholder="请输入验证码"
             >
               <template #prefix>
-                <el-icon><PictureFilled /></el-icon>
+                <el-icon><Message /></el-icon>
               </template>
             </el-input>
             <img :src="captchaImg" class="captchaImg" @click="getCaptcha" alt="点我刷新验证码">

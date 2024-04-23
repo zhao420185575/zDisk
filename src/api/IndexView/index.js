@@ -253,7 +253,7 @@ export const updateUserPassword = ({ emailId, emailCode, newPassword }) => {
                 resolve(true)
             })
             .catch(error => {
-                console.log('错误')
+                responseMessage(0, error.response.data.msg)
                 reject(false)
             })
     })

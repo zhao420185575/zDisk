@@ -3,10 +3,11 @@ import 'element-plus/dist/index.css'
 import { ref, onMounted } from 'vue'
 import { getEmailVerificationCode, getUserInfo, updateUsername, updateUserPassword} from '@/api/IndexView/index.js'
 import { responseMessage } from '@/api/request.js'
-import { debounce } from '@/api/debounce.js'
+import { debounce, throttle } from '@/api/utils.js'
 import router from "@/router/index.js";
 
 const time = ref(60)
+const isSend = ref(false)
 const isDisposed = ref(false)
 //切换表单
 const radioGroup = ref('modifyPersonalData')
@@ -58,6 +59,8 @@ const checkNewPassword = (rule, value, callback) => {
     return callback(new Error('新密码不能为空'))
   } else if(value.length < 6){
     return callback(new Error('新密码长度不能小于6位'))
+  } else {
+    return callback()
   }
 }
 const rules2 = {/* 修改密码表单校验规则 */
@@ -67,10 +70,15 @@ const rules2 = {/* 修改密码表单校验规则 */
 const updatePassword = async () => {
   if(modifyPasswordForm.value.emailId === ''){
     return responseMessage(2, '请先获取验证码')
-  }
-  if(await updateUserPassword(modifyPasswordForm.value)){
-    localStorage.removeItem('token')
-    router.push({name: 'login'})
+  } else {
+    await modifyPassword.value.validate(async (valid) => {
+      if(valid){
+        if(await updateUserPassword(modifyPasswordForm.value)){
+          localStorage.removeItem('token')
+          router.push({name: 'login'})
+        }
+      }
+    })
   }
 }
 const resetForm2 = () => {/* 个人资料表单重置 */
@@ -78,19 +86,20 @@ const resetForm2 = () => {/* 个人资料表单重置 */
   modifyPasswordForm.value.newPassword = null
 }
 const sendCaptcha = async () => {/* 发送邮箱验证码 */
+  isDisposed.value = true
   modifyPasswordForm.value.emailId = await getEmailVerificationCode(modifyPasswordForm.value.email)
   if(modifyPasswordForm.value.emailId){
+    isSend.value = true
     handleTimeChange()
   }
 }
-const debounceSendCaptcha = debounce(sendCaptcha)
 const debounceUpdatePassword = debounce(updatePassword)
 const handleTimeChange = () => {
   if (time.value <= 0) {
+    isSend.value = false
     isDisposed.value = false
     time.value = 60
   } else {
-    isDisposed.value = true
     setTimeout(() => {
       time.value--
       handleTimeChange()
@@ -151,8 +160,8 @@ onMounted(() => {
                 type="primary"
                 class="sendCodeBtn"
                 :disabled="isDisposed"
-                @click="debounceSendCaptcha"
-            >{{ isDisposed ? `${time}s` : '获取验证码' }}</el-button>
+                @click="sendCaptcha"
+            >{{ isSend ? `${time}s` : (isDisposed? '发送中...':'发送验证码') }}</el-button>
           </el-form-item>
           <el-form-item label="新密码" prop="newPassword" show-message>
             <el-input type="password" show-password v-model="modifyPasswordForm.newPassword" @keyup.enter="debounceUpdatePassword" />

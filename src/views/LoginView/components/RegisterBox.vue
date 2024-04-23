@@ -43,7 +43,7 @@
               placeholder="请输入密码"
           >
             <template #prefix>
-              <el-icon><Lock /></el-icon>
+              <el-icon><View /></el-icon>
             </template>
           </el-input>
         </el-form-item>
@@ -55,7 +55,7 @@
                 placeholder="请输入验证码"
             >
               <template #prefix>
-                <el-icon><PictureFilled /></el-icon>
+                <el-icon><Message /></el-icon>
               </template>
             </el-input>
             <el-button
@@ -64,8 +64,8 @@
                 size="large"
                 color="#626aef"
                 :disabled="isDisposed"
-                @click="debounceSendCaptcha"
-            >{{ isDisposed ? `${time}s` : '获取验证码' }}</el-button>
+                @click="sendCaptcha"
+            >{{ isSend ? `${time}s` : (isDisposed? '发送中...':'发送验证码') }}</el-button>
           </el-col>
 
         </el-form-item>
@@ -84,10 +84,10 @@
 </template>
 
 <script setup>
-import {inject, ref} from "vue";
+import { inject, ref } from "vue";
 import { getEmailCode, register } from "@/api/LoginView/index.js";
 import { responseMessage } from '@/api/request.js'
-import { debounce } from '@/api/debounce.js'
+import { debounce } from '@/api/utils.js'
 
 const switchFunc = inject("switchFunc")
 const form = ref(null)
@@ -104,10 +104,12 @@ const checkEmail = (rule, value, callback) => {
   if(value === ''){
     return callback(new Error('邮箱不能为空'))
   }
-  if(reg.test(value)){
+  else if(!reg.test(value)){
+    return callback(new Error('请输入正确的邮箱格式'))
+  }
+  else {
     return callback()
   }
-  return callback(new Error('请输入正确的邮箱格式'))
 }
 
 const checkPassword = (rule, value, callback) => {
@@ -116,7 +118,7 @@ const checkPassword = (rule, value, callback) => {
   } else if(value.length < 6){
     return callback(new Error('密码长度不能小于6位'))
   } else {
-    callback()
+    return callback()
   }
 }
 
@@ -135,27 +137,33 @@ const formRules = {
   confirmPassword: [{ required: true, validator: checkConfirmPassword, trigger: 'blur' }]
 }
 
+const isSend = ref(false)
 const isDisposed = ref(false)
 const time = ref(60)
 
 const sendCaptcha = async () =>{
-  await form.value.validate(async (valid) => {
-    if(valid){
+  form.value.validateField('email', async (result) => {
+    if(result){
+      isDisposed.value = true
       regFormData.value.emailId = await getEmailCode(regFormData.value.email)
       if(regFormData.value.emailId){
+        isSend.value = true
         handleTimeChange()
       }
     }
   })
 }
-const debounceSendCaptcha = debounce(sendCaptcha)
 
 const onSubmit = async () =>{
   await form.value.validate(async (valid) => {
     if(valid){
-      if(regFormData.value.emailCode.length === 0){
+      if(regFormData.value.emailId === ''){
+        return responseMessage(2, '请先获取验证码')
+      }
+      else if(regFormData.value.emailCode.length === 0){
         return responseMessage(2, '验证码不能为空')
-      } else if(await register(regFormData.value)){
+      }
+      else if(await register(regFormData.value)){
         switchFunc()
       }
     }
@@ -168,10 +176,10 @@ const onReset = () =>{
 
 const handleTimeChange = () => {
   if (time.value <= 0) {
+    isSend.value = false
     isDisposed.value = false
     time.value = 60
   } else {
-    isDisposed.value = true
     setTimeout(() => {
       time.value--
       handleTimeChange()
