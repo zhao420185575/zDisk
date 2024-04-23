@@ -64,7 +64,7 @@
                 size="large"
                 color="#626aef"
                 :disabled="isDisposed"
-                @click="sendCaptcha"
+                @click="debounceSendCaptcha"
             >{{ isDisposed ? `${time}s` : '获取验证码' }}</el-button>
           </el-col>
 
@@ -87,6 +87,7 @@
 import {inject, ref} from "vue";
 import { getEmailCode, register } from "@/api/LoginView/index.js";
 import { responseMessage } from '@/api/request.js'
+import { debounce } from '@/api/debounce.js'
 
 const switchFunc = inject("switchFunc")
 const form = ref(null)
@@ -147,6 +148,7 @@ const sendCaptcha = async () =>{
     }
   })
 }
+const debounceSendCaptcha = debounce(sendCaptcha)
 
 const onSubmit = async () =>{
   await form.value.validate(async (valid) => {

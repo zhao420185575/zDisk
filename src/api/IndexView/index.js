@@ -212,7 +212,7 @@ export const updateUsername = (params) => {
                 }
             })
             .catch(error => {
-                responseMessage(0, res.data.msg)
+                console.log(error)
                 reject(false)
             })
     })
@@ -231,18 +231,16 @@ export const getEmailVerificationCode = (params) =>{
                 resolve(res.data.data.emailID)
             })
             .catch(error =>{
+                console.log(error)
                 reject(false)
             })
     })
 }
 
-export const updateUserPassword = (params) => {
-    const { emailId, emailCode, newPassword } = params
+export const updateUserPassword = ({ emailId, emailCode, newPassword }) => {
     return new Promise((resolve, reject) => {
         service.post('/api/ChangePassword', {
-            emailId: emailId,
-            emailCode: emailCode,
-            newPassword: newPassword
+            emailId, emailCode, newPassword
         }, {
             headers: {
                 'Content-Type': "application/x-www-form-urlencoded"
@@ -255,7 +253,7 @@ export const updateUserPassword = (params) => {
                 resolve(true)
             })
             .catch(error => {
-                responseMessage(0, res.data.msg)
+                console.log('错误')
                 reject(false)
             })
     })

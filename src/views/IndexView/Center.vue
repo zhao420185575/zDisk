@@ -3,7 +3,9 @@ import 'element-plus/dist/index.css'
 import { ref, onMounted } from 'vue'
 import { getEmailVerificationCode, getUserInfo, updateUsername, updateUserPassword} from '@/api/IndexView/index.js'
 import { responseMessage } from '@/api/request.js'
+import { debounce } from '@/api/debounce.js'
 import router from "@/router/index.js";
+
 const time = ref(60)
 const isDisposed = ref(false)
 //切换表单
@@ -28,8 +30,7 @@ const modifyPersonalDataForm = ref({/* 修改个人资料的form */
 const rules1 = {/* 个人资料表单校验规则 */
   userName: [{ required: true, message: '用户名不能为空', trigger: 'blur' }]
 }
-const updataPersonalData = async (form) => {/* 提交个人资料表单 */
-  if(!form) return
+const updatePersonalData = async () => {/* 提交个人资料表单 */
   await modifyPersonalData.value.validate(async (valid) => {
     if (valid) {
       if (await updateUsername(modifyPersonalDataForm.value.userName)) {
@@ -38,10 +39,10 @@ const updataPersonalData = async (form) => {/* 提交个人资料表单 */
     }
   })
 }
-const resetForm1 = (form) => {/* 个人资料表单重置 */
-  if (!form) return
+const resetForm1 = () => {/* 个人资料表单重置 */
   modifyPersonalDataForm.value.userName = null
 }
+const debounceUpdatePersonalData = debounce(updatePersonalData)
 
 
 //以下是修改密码的表单数据
@@ -59,25 +60,20 @@ const checkNewPassword = (rule, value, callback) => {
     return callback(new Error('新密码长度不能小于6位'))
   }
 }
-
 const rules2 = {/* 修改密码表单校验规则 */
   emailCode: [{required: true, message: '验证码不能为空', trigger: 'blur'}],
   newPassword: [{required: true, validator: checkNewPassword, trigger: 'blur'}],
 }
-const updatePassword = async (form) => {
-  if(!form) return
-  let obj = {
-    emailId: modifyPasswordForm.value.emailId,
-    emailCode: modifyPasswordForm.value.emailCode,
-    newPassword: modifyPasswordForm.value.newPassword
+const updatePassword = async () => {
+  if(modifyPasswordForm.value.emailId === ''){
+    return responseMessage(2, '请先获取验证码')
   }
-  if(await updateUserPassword(obj)){
+  if(await updateUserPassword(modifyPasswordForm.value)){
     localStorage.removeItem('token')
-    router.push({ name: 'login' })
+    router.push({name: 'login'})
   }
 }
-const resetForm2 = (form) => {/* 个人资料表单重置 */
-  if (!form) return
+const resetForm2 = () => {/* 个人资料表单重置 */
   modifyPasswordForm.value.emailCode = null
   modifyPasswordForm.value.newPassword = null
 }
@@ -87,7 +83,8 @@ const sendCaptcha = async () => {/* 发送邮箱验证码 */
     handleTimeChange()
   }
 }
-
+const debounceSendCaptcha = debounce(sendCaptcha)
+const debounceUpdatePassword = debounce(updatePassword)
 const handleTimeChange = () => {
   if (time.value <= 0) {
     isDisposed.value = false
@@ -123,7 +120,7 @@ onMounted(() => {
                  ref="modifyPersonalData" :model="modifyPersonalDataForm" :rules="rules1">
           <!-- 表单信息 -->
           <el-form-item label="用户名" prop="userName" show-message>
-            <el-input type="text" required v-model="modifyPersonalDataForm.userName"/>
+            <el-input type="text" required v-model="modifyPersonalDataForm.userName" @keyup.enter="debounceUpdatePersonalData"/>
           </el-form-item>
           <el-form-item label="账号" prop="email">
             <el-input type="text" :disabled="true" v-model="modifyPersonalDataForm.email" />
@@ -134,8 +131,8 @@ onMounted(() => {
 
           <!-- 表单操作 -->
           <el-form-item class="operation">
-            <el-button type="primary" @click="updataPersonalData(modifyPersonalDataForm)">保存</el-button>
-            <el-button @click="resetForm1(modifyPersonalDataForm)">重置</el-button>
+            <el-button type="primary" @click="debounceUpdatePersonalData">保存</el-button>
+            <el-button @click="resetForm1">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -149,25 +146,25 @@ onMounted(() => {
             <el-input type="text" required :disabled="true" v-model="modifyPasswordForm.email"/>
           </el-form-item>
           <el-form-item label="验证码" prop="emailCode" show-message>
-            <el-input style="max-width: 40%" v-model="modifyPasswordForm.emailCode" />
+            <el-input style="max-width: 40%" v-model="modifyPasswordForm.emailCode" @keyup.enter="debounceUpdatePassword" />
             <el-button
                 type="primary"
                 class="sendCodeBtn"
                 :disabled="isDisposed"
-                @click="sendCaptcha"
+                @click="debounceSendCaptcha"
             >{{ isDisposed ? `${time}s` : '获取验证码' }}</el-button>
           </el-form-item>
           <el-form-item label="新密码" prop="newPassword" show-message>
-            <el-input type="password" show-password v-model="modifyPasswordForm.newPassword" />
+            <el-input type="password" show-password v-model="modifyPasswordForm.newPassword" @keyup.enter="debounceUpdatePassword" />
           </el-form-item>
 
           <!-- 表单操作 -->
           <el-form-item class="operation">
             <el-button
                 type="primary"
-                @click="updatePassword(modifyPasswordForm)"
+                @click="debounceUpdatePassword"
             >保存</el-button>
-            <el-button @click="resetForm2(modifyPasswordForm)">重置</el-button>
+            <el-button @click="resetForm2">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
