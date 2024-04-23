@@ -191,7 +191,7 @@ import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
         return
       }
       if(await downloadFile(fileList.value)){
-          cleanSelect()
+          // cleanSelect()
           responseMessage(1, '下载成功')
       }
     }

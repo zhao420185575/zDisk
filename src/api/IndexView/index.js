@@ -52,10 +52,13 @@ export const downloadFile = (params) => {
         })
             .then(res => {
                 // 创建一个 <a> 元素
+
                 const header = res.headers.get('Content-Disposition')
                 const link = document.createElement('a')
                 link.href = window.URL.createObjectURL(res.data)
+                console.log(res)
                 const filenameWithEncoding = header.match(/filename="([^"]+)"/)[1]; // 使用正则表达式匹配文件名部分
+
                 const filename = decodeURIComponent(filenameWithEncoding); // 解码文件名// 解码文件名
 
                 link.download = filename // 设置下载文件的文件名
@@ -73,6 +76,7 @@ export const downloadFile = (params) => {
                 resolve(true)
             })
             .catch(error => {
+
                 console.error('下载文件失败：', error)
                 reject(false)
             })
