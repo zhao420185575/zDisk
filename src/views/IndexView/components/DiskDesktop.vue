@@ -25,7 +25,7 @@
             <el-button type="primary" @click="submitShare">确认分享</el-button>
           </div>
           <div class="share-info" v-else>
-              <span>分享链接：<a :href="shareInfo.key">{{ strURL + shareInfo.key }}</a></span>
+              <span>分享链接：<a :href="strURL + shareInfo.key">{{ strURL + shareInfo.key }}</a></span>
               <span v-if="shareInfo.pwd">提取码：{{ shareInfo.pwd }}</span>
             <el-button type="primary" @click="copyUrl(shareInfo.key, shareInfo.pwd)">复制到剪切板</el-button>
           </div>
@@ -35,10 +35,10 @@
 </template>
 
 <script setup>
-import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
-    import DiskFile from "@/views/IndexView/components/DiskFile.vue";
+  import {inject, nextTick, onMounted, provide, ref, watch} from "vue";
+  import DiskFile from "@/views/IndexView/components/DiskFile.vue";
   import {downloadFile, getFileArr, getShareKey} from "@/api/IndexView/index.js";
-    import Menu from "@/views/IndexView/components/ContextMenu/Menu.vue";
+  import Menu from "@/views/IndexView/components/ContextMenu/Menu.vue";
   import {baseURL, responseMessage} from "@/api/request.js";
 
 

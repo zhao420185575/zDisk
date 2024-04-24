@@ -1,3 +1,19 @@
+import { ElLoading } from 'element-plus'
+
+var loadingInstance
+
+export const startLoading = () =>{
+    loadingInstance = ElLoading.service({
+        text: '加载中',
+        background: 'rgba(0, 0, 0, 0)',
+    })
+}
+
+export const stopLoading = () =>{
+    loadingInstance.close()
+    loadingInstance = null
+}
+
 export const debounce = (fn, delay = 200) => {
     let timer = null
     return function(...args) {
@@ -19,3 +35,4 @@ export const throttle = (fn, delay) => {
         }, delay);
     }
 }
+

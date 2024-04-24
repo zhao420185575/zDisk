@@ -1,4 +1,5 @@
 import { service, responseMessage } from '@/api/request.js'
+import {stopLoading} from "@/api/utils.js";
 
 export const getFileArr = (params) =>{
     return new Promise((resolve, reject) =>{
@@ -20,12 +21,14 @@ export const uploadFile = (params) =>{
         service.post(`/api/file/uploadfile`, params)
             .then(res => {
                 console.log(res)
-                if(resa.data.code === 200){
+                if(res.data.code === 200){
+                    stopLoading()
                     resolve(res.data.data)
                 }
             })
             .catch(error =>{
                 console.log(error)
+                stopLoading()
                 responseMessage(0, error.response.data.msg)
                 reject(false)
             })

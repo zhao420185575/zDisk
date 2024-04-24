@@ -1,9 +1,10 @@
 <script setup>
-import {inject, nextTick, ref} from "vue";
+    import {inject, nextTick, ref} from "vue";
     import { uploadFile, verifySharding, mergeFile } from '@/api/IndexView/index.js'
     import SparkMD5 from 'spark-md5'
     import {responseMessage} from "@/api/request.js";
     import { genFileId } from 'element-plus'
+    import { startLoading } from "@/api/utils.js";
 
     const props = defineProps(['diskDeskRef'])
 
@@ -14,7 +15,7 @@ import {inject, nextTick, ref} from "vue";
     const uploadRef = ref(null)
 
     const onUpload = async (File) => {
-      loading.value = true
+      startLoading()
       const chunkSize = 30 * 1024 * 1024; // 分片大小
       const file = File.raw // 文件
       const fileSize = File.size // 文件大小
@@ -66,9 +67,12 @@ import {inject, nextTick, ref} from "vue";
 
     }
 
-    const uploadChunkFile = (formdata) => {
+    const uploadChunkFile = async (formdata) => {
+        await uploadFile(formdata)
 
-      uploadFile(formdata)
+
+        loading.value = false
+
     }
 
 
@@ -138,11 +142,9 @@ import {inject, nextTick, ref} from "vue";
         title="上传文件"
         width="800"
         draggable
+        align-center
     >
       <el-upload
-          v-loading="loading"
-          element-loading-text="上传中..."
-          element-loading-background="rgba(255, 255, 255, .7)"
           drag
           v-model:file-list="fileList"
           :on-change="onUpload"
