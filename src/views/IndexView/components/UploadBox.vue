@@ -4,7 +4,7 @@
     import SparkMD5 from 'spark-md5'
     import {responseMessage} from "@/api/request.js";
     import { genFileId } from 'element-plus'
-    import { startLoading } from "@/api/utils.js";
+    import {startLoading, stopLoading} from "@/api/utils.js";
 
     const props = defineProps(['diskDeskRef'])
 
@@ -83,6 +83,7 @@
               props.diskDeskRef.getFileList(getCurrentUrl())
             })
             loading.value = false
+            stopLoading()
             responseMessage(1, '上传成功')
         }
     }

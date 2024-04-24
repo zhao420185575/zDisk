@@ -22,7 +22,7 @@ export const uploadFile = (params) =>{
             .then(res => {
                 console.log(res)
                 if(res.data.code === 200){
-                    stopLoading()
+
                     resolve(res.data.data)
                 }
             })
